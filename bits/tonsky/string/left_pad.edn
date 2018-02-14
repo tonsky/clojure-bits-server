@@ -1,0 +1,14 @@
+{:meta {:doc "Pads string with char on the left"
+        :tag String}
+ :body (fn left-pad
+         ([^String s ^long len]
+           (left-pad s len \space))
+         ([^String s ^long len ^Character ch]
+           (let [c (count s)]
+             (if (>= c len)
+               s
+               (let [sb (StringBuilder. len)]
+                 (dotimes [_ (- len c)]
+                   (.append sb ch))
+                 (.append sb s)
+                 (str sb))))))}
