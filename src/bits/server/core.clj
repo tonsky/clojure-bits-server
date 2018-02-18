@@ -1,6 +1,7 @@
 (ns bits.server.core
   (:require
-    [clojure.string :as str]))
+    [clojure.string :as str]
+    [rum.core :as rum]))
 
 
 (def ^:dynamic dev? true) ;; FIXME
@@ -53,3 +54,43 @@
                        ";SameSite=Lax"
                        ";Path=/"
                        (str/join (for [[k v] attrs] (str ";" k "=" v))))]))
+
+
+(rum/defc header [req]
+  (let [{:bits/keys [session user]} req]
+    [:.header
+      [:.header-inner
+        [:.header-left
+          [:a.header-title {:href "/"} "Clojure Bits"]]
+        [:.header-right
+          (if (some? user)
+            (list
+              [:.header-section.header-section_create
+                [:a.button_create {:href "#"} "+ Add Function"]]
+              [:.header-section.header-section_user 
+                [:a {:href "#"} (:user/email user)]]
+              [:form.header-section.header-section_logout
+                {:action "/sign-out" :method "POST"}
+                [:input {:type "hidden", :name "csrf-token", :value (:session/csrf-token session)}]
+                [:button.button.header-signout "sign out"]])
+            (list
+              [:.header-section.header-section_signin [:a {:href "/request-sign-in"} "sign in"]]))]]]))
+
+
+(rum/defc page-skeleton [req content]
+  [:html
+    [:head
+      [:meta { :http-equiv "Content-Type" :content "text/html; charset=UTF-8"}]
+      [:title "Clojure Bits"]
+      [:link { :rel "stylesheet" :type "text/css" :href "/static/style.css" }]]
+      [:body
+        (header req)
+        content]])
+
+
+(defn page [handler]
+  (fn [req]
+    { :status  200
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body    (str "<!DOCTYPE html>\n" (rum/render-static-markup
+                                          (page-skeleton req (handler req)))) }))

@@ -11,6 +11,7 @@ input, button, .button, textarea { font: inherit; outline: none; }
 input[type=text], textarea { background: #EEE; border: none; border-bottom: 2px solid black; border-radius: 4px 4px 0 0; padding: 14px 15px; }
 
 button, .button { display: inline-block; padding: 16px 15px 14px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; }
+button:hover, .button:hover { background: #ffe53b; }
 
 .page, .header-inner { width: 100%; margin: 0 auto; padding: 0 20px; }
 
@@ -21,8 +22,11 @@ button, .button { display: inline-block; padding: 16px 15px 14px; background: #f
 .header-section { display: inline-block; margin-left: 1px; font-size: 16px; }
 .header-section > a { padding: 10px; border-radius: 4px; }
 .header-section > a:hover { background: rgba(0,0,0,0.05); }
-.header-signout { background: transparent; border: none; border-radius: 4px; cursor: pointer; line-height: 38px; vertical-align: baseline; height: 40px; outline: none; padding: 0 10px; }
-.header-signout:hover { background: rgba(0,0,0,0.05); }
+.header-section > .button { background: transparent; border: none; border-radius: 4px; cursor: pointer; line-height: 38px; vertical-align: baseline; height: 40px; outline: none; padding: 0 10px; }
+.header-section > .button:hover { background: rgba(0,0,0,0.05); }
+
+.header-section > .button_create { padding: 10px 20px; background: #ffdf0f; }
+.header-section > .button_create:hover { background: #ffe53b; }
 
 .page_middle { display: flex; justify-content: center; align-items: center; height: calc(100vh - 50px); }
 

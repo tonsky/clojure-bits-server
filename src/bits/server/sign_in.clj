@@ -1,15 +1,10 @@
 (ns bits.server.sign-in
   (:require
     [clojure.string :as str]
-    [clojure.stacktrace :as stacktrace]
     
     [rum.core :as rum]
-    [bidi.bidi :as bidi]
     [datascript.core :as ds]
-    [ring.middleware.params]
-    [bidi.ring :as bidi.ring]
     [ring.util.response :as response]
-    [org.httpkit.server :as http-kit]
     
     [bits.server.db :as db]
     [bits.server.core :as core]))
@@ -33,7 +28,7 @@
 (rum/defc request-sign-in-page [req]
   (let [{:strs [error email]} (:query-params req)]
     [:.page.page_middle
-      [:form.signin { :action "/api/request-sign-in" :method "POST" }
+      [:form.signin { :action "/request-sign-in" :method "POST" }
         (case error
           nil                     nil
           "malformed-address"     [:.signin-message "> Malformed email"]
@@ -125,12 +120,12 @@
         (when (some? sign-in-token)
           [:p
             [:a.button
-              {:href (core/url "/api/sign-in" {:sign-in-token sign-in-token
-                                               :email email})}
+              {:href (core/url "/sign-in" {:sign-in-token sign-in-token
+                                           :email email})}
               "Psst... Sign in here"]])]]))
 
 
-(defn api-sign-in [req]
+(defn sign-in [req]
   (let [{:strs [email sign-in-token]} (:query-params req)
         db   @db/*db
         user (ds/entity db [:user.sign-in/token sign-in-token])]
@@ -153,7 +148,7 @@
         (response/redirect "/")))))
 
 
-(defn api-sign-out [req]
+(defn sign-out [req]
   (let [{:strs [csrf-token]} (:form-params req)
         session (:bits/session req)]
     (cond
@@ -191,3 +186,11 @@
   (when (nil? (:request/user req))
     { :status 401
       :body   (str "Unauthorized, session_id: " (get-in req [:cookies "bits_session_id"])) }))
+
+
+(def routes
+  ["" {:get  {"/request-sign-in" (core/page request-sign-in-page)
+              "/sign-in-sent"    (core/page sign-in-sent-page)
+              "/sign-in"         sign-in}
+       :post {"/request-sign-in" api-request-sign-in
+              "/sign-out"        sign-out}}])
