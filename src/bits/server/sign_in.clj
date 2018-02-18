@@ -31,6 +31,7 @@
       [:form.signin { :action "/request-sign-in" :method "POST" }
         (case error
           nil                     nil
+          "session-expired"       [:.signin-message "> Sorry, your session has expired. Please sign in again"]
           "malformed-address"     [:.signin-message "> Malformed email"]
           "email-failure"         [:.signin-message "> Oops. Can’t sent mail right now. Please try again later"]
           "csrf-token-invalid"    [:.signin-message "> Oops. Something went wrong. Please try once more"]
@@ -182,15 +183,9 @@
           (core/set-cookie "bits_session_id" (:session/id session') {"Max-Age" (/ session-ttl-ms 1000)}))))))
 
 
-(defn check-session [req]
-  (when (nil? (:request/user req))
-    { :status 401
-      :body   (str "Unauthorized, session_id: " (get-in req [:cookies "bits_session_id"])) }))
-
-
 (def routes
-  ["" {:get  {"/request-sign-in" (core/page request-sign-in-page)
-              "/sign-in-sent"    (core/page sign-in-sent-page)
+  ["" {:get  {"/request-sign-in" (core/wrap-page request-sign-in-page)
+              "/sign-in-sent"    (core/wrap-page sign-in-sent-page)
               "/sign-in"         sign-in}
        :post {"/request-sign-in" api-request-sign-in
               "/sign-out"        sign-out}}])

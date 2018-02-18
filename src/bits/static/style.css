@@ -39,3 +39,9 @@ button:hover, .button:hover { background: #ffe53b; }
 .message > h1 { font-size: 24px; margin-bottom: 0; }
 .message > p > .button { margin: 30px 0 -10px 0; }
 .message > p > em { font-style: italic; }
+
+.claim { width: 100%; min-width: 240px; max-width: 500px; padding: 20px 20px 10px 20px; }
+.claim-message { color: #c33; margin: 0 0 15px 0; }
+.claim-message > em { font-family: monospace; font-style: normal; }
+.claim-namespace { width: calc(100% - 110px); min-width: 200px; margin: 0 10px 10px 0; }
+.claim-submit { width: 100px; margin: 0 0 10px 0; }

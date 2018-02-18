@@ -13,6 +13,7 @@
     
     [bits.server.db :as db]
     [bits.server.core :as core]
+    [bits.server.edit :as edit]
     [bits.server.sign-in :as sign-in]))
 
 
@@ -42,15 +43,16 @@
 
 
 (def routes
-  ["" {:get {"/" (core/page index-page)}}])
+  ["" {:get {"/" (core/wrap-page index-page)}}])
 
 
 (def app
   (some-fn
     (->
       (some-fn
-        (bidi.ring/make-handler sign-in/routes)
-        (bidi.ring/make-handler routes))
+        (bidi.ring/make-handler routes)
+        (bidi.ring/make-handler edit/routes)
+        (bidi.ring/make-handler sign-in/routes))
       (sign-in/wrap-session)
       (ring.middleware.params/wrap-params)
       (core/read-cookies)

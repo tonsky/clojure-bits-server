@@ -19,4 +19,5 @@
     (bits.server/stop!)
     (clojure.tools.namespace.repl/refresh)
     ((ns-resolve *ns* 'bits.server/start!) 6001)
-    ))
+  )
+)

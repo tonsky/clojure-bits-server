@@ -6,6 +6,7 @@
 
 (defonce *db (ds/create-conn {
   :user/email           {#_:db.type/string :db/unique :db.unique/identity}
+  :user/namespace       {#_:db.type/string :db/unique :db.unique/identity}
   :user.sign-in/token   {#_:db.type/string :db/unique :db.unique/identity}
   :user.sign-in/created {#_:db.type/long}
   

@@ -1,7 +1,8 @@
 (ns bits.server.core
   (:require
     [clojure.string :as str]
-    [rum.core :as rum]))
+    [rum.core :as rum]
+    [ring.util.response :as response]))
 
 
 (def ^:dynamic dev? true) ;; FIXME
@@ -66,7 +67,7 @@
           (if (some? user)
             (list
               [:.header-section.header-section_create
-                [:a.button_create {:href "#"} "+ Add Function"]]
+                [:a.button_create {:href "/add-bit"} "+ Add Function"]]
               [:.header-section.header-section_user 
                 [:a {:href "#"} (:user/email user)]]
               [:form.header-section.header-section_logout
@@ -88,9 +89,16 @@
         content]])
 
 
-(defn page [handler]
+(defn wrap-page [handler]
   (fn [req]
     { :status  200
       :headers { "Content-Type" "text/html; charset=utf-8" }
       :body    (str "<!DOCTYPE html>\n" (rum/render-static-markup
                                           (page-skeleton req (handler req)))) }))
+
+
+(defn wrap-auth [handler] ;; TODO remember user’s email address
+  (fn [req]
+    (if (nil? (:bits/user req))
+      (response/redirect (url "/request-sign-in" {:error "session-expired"}))
+      (handler req))))
