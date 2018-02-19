@@ -66,8 +66,8 @@
         [:.header-right
           (if (some? user)
             (list
-              [:.header-section.header-section_create
-                [:a.button_create {:href "/add-bit"} "+ Add Function"]]
+              [:.header-section.header-section_addbit
+                [:a.button_addbit {:href "/add-bit"} "+ Add Function"]]
               [:.header-section.header-section_user 
                 [:a {:href "#"} (:user/email user)]]
               [:form.header-section.header-section_logout

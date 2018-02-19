@@ -21,28 +21,42 @@
       (response/redirect "/claim-ns"))))
 
 
+(def ns-reserved? #{"client" "server"})
+
+
 (rum/defc claim-ns-page [req]
   (let [{:strs [error namespace]} (:query-params req)
         {:bits/keys [session user]} req
         [_ suggest] (re-matches #"([^@]+)@.*" (:user/email user))
         suggest (-> suggest
                     (str/lower-case)
-                    (str/replace #"_" "-")
-                    (str/replace #"[^a-z0-9\-]+" ""))]
+                    (str/replace #"[_\.\+]+" "-")
+                    (str/replace #"[^a-z0-9\-]+" ""))
+        placeholder (if (and (nil? (ds/entity @db/*db [:user/namespace suggest]))
+                             (not (ns-reserved? suggest))
+                             (>= (count suggest) 3))
+                      (str "namespace, e.g. " suggest)
+                      "namespace")]
     [:.page.page_middle
       [:form.claim { :action "/claim-ns" :method "POST" }
+        [:h1.claim-title "Claim your root namespace"]
+        [:p "Everyone gets their own unique namespace where they could put all their functions and sub-namespaces in."]
+        [:p "We recommend using your github username or a nickname."]
+        [:p {:style {:margin-bottom "40px"}} "You only have to do this once."]
         (case error
           nil                  nil
           "csrf-token-invalid" [:.claim-message "> Oops. Something went wrong. Please try once more"]
-          "taken"              [:.claim-message "> Sorry, “" [:em namespace] "” is already taken. Try something else"]
-          "reserved"           [:.claim-message "> Sorry, “" [:em namespace] "” is reserved. Try something else"]
-          "blank"              [:.claim-message "> Please provide something"]
+          "taken"              [:.claim-message "> Sorry, “bits." namespace "” is already taken. Try something else"]
+          "reserved"           [:.claim-message "> Sorry, “bits." namespace "” is reserved. Try something else"]
+          "blank"              [:.claim-message "> Please enter something"]
           "short"              [:.claim-message "> Name’s too short. Please use at least 3 characters"]
-          "malformed"          [:.claim-message "> We only allow " [:em "a-z"] ", " [:em "0-9"] " and " [:em "-"]])
+          "malformed"          [:.claim-message "> We only allow a-z, 0-9 and -"])
         [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
-        [:input.claim-namespace {:type "text" :name "namespace" :placeholder "Namespace" :value (or namespace suggest)}]
+        [:.input.claim-namespace
+          {:on-click "document.querySelector('.claim-namespace-input').focus()"}
+          [:.claim-namespace-prefix "bits."]
+          [:input.claim-namespace-input {:type "text" :autofocus true :name "namespace" :placeholder placeholder :value namespace}]]
         [:button.button.claim-submit "Claim"]]]))
-
 
 (defn claim-ns [req]
   (if (some? (:user/namespace (:bits/user req)))
@@ -50,12 +64,16 @@
     ((core/wrap-page claim-ns-page) req)))
 
 
+(defn ns-normalize [s]
+  (-> s str/lower-case str/trim))
+
+
 (defn do-claim-ns [req]
   (let [{:strs [namespace csrf-token]} (:form-params req)
         {:bits/keys [session user]} req
-        namespace (str/trim (str/lower-case namespace))]
+        namespace (ns-normalize namespace)]
     (cond
-      ;; already claimed
+      ;; already claimed something
       (some? (:user/namespace user))
       (response/redirect "/add-bit")
 
@@ -63,17 +81,17 @@
       (not= csrf-token (:session/csrf-token session))
       (response/redirect (core/url "/claim-ns" {:error "csrf-token-invalid", :namespace namespace}))
 
-      ;; taken
+      ;; taken by someone
       (some? (ds/entity @db/*db [:user/namespace namespace]))
       (response/redirect (core/url "/claim-ns" {:error "taken", :namespace namespace}))
 
       ;; reserved
-      (contains? #{"client" "server"} namespace)
+      (ns-reserved? namespace)
       (response/redirect (core/url "/claim-ns" {:error "reserved", :namespace namespace}))
 
       ;; blank
       (str/blank? namespace)
-      (response/redirect (core/url "/claim-ns" {:error "blank"}))
+      (response/redirect (core/url "/claim-ns" {:error "blank", :namespace ""}))
 
       ;; short
       (< (count namespace) 3)
