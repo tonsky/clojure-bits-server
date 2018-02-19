@@ -38,67 +38,68 @@
           "sign-in-token-expired" [:.signin-message "> This sign-in link has expired. Please request a new one"]
           "sign-in-token-invalid" [:.signin-message "> Sorry, this link doesn’t work anymore. Please request a new one"])
         [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token (:bits/session req))}]
-        [:input.signin-email {:type "text" :name "email" :placeholder "Email" :value (or email "prokopov@gmail.com")}] ;; FIXME
+        [:input.signin-email {:type "text" :autofocus true :name "email" :placeholder "Email" :value (or email "prokopov@gmail.com")}] ;; FIXME
         [:button.button.signin-submit "Sign In"]]]))
 
 
-(defn send-sign-in! [email]
-  (let [user (db/insert! db/*db
-               { :user/email           email
-                 :user.sign-in/token   (new-token)
-                 :user.sign-in/created (core/now) })]
+(defn send-sign-in! [user email display-email]
+  (let [token (new-token)]
+    (ds/transact! db/*db
+      [{ :db/id                (:db/id user)
+         :user.sign-in/token   token
+         :user.sign-in/created (core/now) }])
     (if true ;; TODO sent email
       (response/redirect
         (core/url "/sign-in-sent"
-          {:message       "sent"
-           :email         email
-           :sign-in-token (:user.sign-in/token user)}))
+          (cond-> {:message "sent"
+                   :email   display-email}
+            core/dev? (assoc :sign-in-token token))))
       (response/redirect
         (core/url "/request-sign-in"
           {:error "email-failure"
-           :email email})))))
+           :email display-email})))))
 
 
-(defn normalize-email [email]
-  (let [[user domain] (-> email (str/trim) (str/split #"@"))]
-    (str user "@" (str/lower-case domain))))
+(defn normalize-email [display-email]
+  (str/lower-case display-email))
 
 
 (defn api-request-sign-in [req]
-  (let [{:strs [csrf-token email]} (:form-params req)]
+  (let [{:strs [csrf-token email]} (:form-params req)
+        display-email (str/trim email)
+        email         (normalize-email display-email)]
     (cond
       (some? (:bits/user req))
       (response/redirect "/")
 
       (not= csrf-token (:session/csrf-token (:bits/session req)))
       (response/redirect (core/url "/request-sign-in" {:error "csrf-token-invalid"
-                                                       :email email}))
+                                                       :email display-email}))
 
       (not (re-matches #"\s*[^@\s]+@[^@.\s]+\.[^@\s]+\s*" email))
       (response/redirect (core/url "/request-sign-in" {:error "malformed-address"
-                                                       :email email}))
+                                                       :email display-email}))
 
       :else
-      (let [email (normalize-email email)
-            db    @db/*db
-            user  (ds/entity db [:user/email email])]
+      (let [db   @db/*db
+            user (ds/entity db [:user/email email])]
         (cond
           ;; no user
           (nil? user)
-          (do
-            (db/insert! db/*db {:user/email email})
-            (send-sign-in! email))
+          (let [new-user (db/insert! db/*db {:user/email email
+                                             :user/display-email display-email})]
+            (send-sign-in! new-user email display-email))
 
           ;; user, no token
           (nil? (:user.sign-in/token user))
-          (send-sign-in! email)
+          (send-sign-in! user email display-email)
 
           ;; user, token, not expired yet
           (<= (- (core/now) (:user.sign-in/created user)) sign-in-ttl-ms)
           (response/redirect 
             (core/url "/sign-in-sent"
               {:message       "already-sent"
-               :email         email
+               :email         display-email
                :sign-in-token (when core/dev? (:user.sign-in/token user))}))
           
           ;; user, token, expired
@@ -107,7 +108,7 @@
             (ds/transact! db/*db
               [[:db.fn/retractAttribute (:db/id user) :user.sign-in/token]
                [:db.fn/retractAttribute (:db/id user) :user.sign-in/created]])
-            (send-sign-in! email)))))))
+            (send-sign-in! user email display-email)))))))
 
 
 (rum/defc sign-in-sent-page [req]

@@ -38,25 +38,27 @@
                       (str "namespace, e.g. " suggest)
                       "namespace")]
     [:.page.page_middle
-      [:form.claim { :action "/claim-ns" :method "POST" }
-        [:h1.claim-title "Claim your root namespace"]
-        [:p "Everyone gets their own unique namespace where they could put all their functions and sub-namespaces in."]
-        [:p "We recommend using your github username or a nickname."]
-        [:p {:style {:margin-bottom "40px"}} "You only have to do this once."]
-        (case error
-          nil                  nil
-          "csrf-token-invalid" [:.claim-message "> Oops. Something went wrong. Please try once more"]
-          "taken"              [:.claim-message "> Sorry, “bits." namespace "” is already taken. Try something else"]
-          "reserved"           [:.claim-message "> Sorry, “bits." namespace "” is reserved. Try something else"]
-          "blank"              [:.claim-message "> Please enter something"]
-          "short"              [:.claim-message "> Name’s too short. Please use at least 3 characters"]
-          "malformed"          [:.claim-message "> We only allow a-z, 0-9 and -"])
-        [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
-        [:.input.claim-namespace
-          {:on-click "document.querySelector('.claim-namespace-input').focus()"}
-          [:.claim-namespace-prefix "bits."]
-          [:input.claim-namespace-input {:type "text" :autofocus true :name "namespace" :placeholder placeholder :value namespace}]]
-        [:button.button.claim-submit "Claim"]]]))
+      [:.claim
+        [:.claim-intro
+          [:h1 "Claim your root namespace"]
+          [:p "Everyone gets their own unique namespace where they could put all their functions and sub-namespaces in."]
+          [:p "We recommend using your github username or a nickname."]
+          [:p {:style {:margin-bottom "40px"}} "You only have to do this once."]]
+        [:form.claim-form { :action "/claim-ns" :method "POST" }
+          [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
+          (case error
+            nil                  nil
+            "csrf-token-invalid" [:.claim-message "> Oops. Something went wrong. Please try once more"]
+            "taken"              [:.claim-message "> Sorry, “bits." namespace "” is already taken. Try something else"]
+            "reserved"           [:.claim-message "> Sorry, “bits." namespace "” is reserved. Try something else"]
+            "blank"              [:.claim-message "> Please enter something"]
+            "short"              [:.claim-message "> Name’s too short. Please use at least 3 characters"]
+            "malformed"          [:.claim-message "> We only allow a-z, 0-9 and -"])
+          [:.input.claim-namespace
+            {:on-click "document.querySelector('.claim-namespace-input').focus()"}
+            [:.claim-namespace-prefix "bits."]
+            [:input.claim-namespace-input {:type "text" :autofocus true :name "namespace" :placeholder placeholder :value namespace}]]
+          [:button.button.claim-submit "Claim"]]]]))
 
 (defn claim-ns [req]
   (if (some? (:user/namespace (:bits/user req)))

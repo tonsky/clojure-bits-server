@@ -10,10 +10,10 @@ h1 { font-size: 24px; }
 
 input, button, .button, textarea { font: inherit; outline: none; }
 input[type=text], textarea, .input { background: #EEE; border: none; border-bottom: 2px solid black; border-radius: 4px 4px 0 0; }
-input[type=text], textarea { padding: 14px 15px; }
+input[type=text], textarea { padding: 15px 15px 13px; }
 input[type=text]::placeholder, textarea::placeholder { font-style: italic; }
 
-button, .button { display: inline-block; padding: 16px 15px 14px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; }
+button, .button { display: inline-block; padding: 15px 15px 15px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; }
 button:hover, .button:hover { background: #ffe53b; }
 
 .page, .header-inner { width: 100%; margin: 0 auto; padding: 0 20px; }
@@ -43,10 +43,8 @@ button:hover, .button:hover { background: #ffe53b; }
 .message > p > .button { margin: 30px 0 -10px 0; }
 .message > p > em { font-style: italic; }
 
-.claim { width: 100%; min-width: 240px; max-width: 600px; padding: 20px 20px 10px 20px; }
-
-.claim > h1, .claim > p { max-width: 500px; margin-left: auto; margin-right: auto; }
-
+.claim { width: 100%; min-width: 240px; max-width: 650px; padding: 20px 20px 10px 20px; }
+.claim-intro { max-width: 500px; margin-left: auto; margin-right: auto; }
 .claim-message { color: #c33; margin: 0 0 15px 0; }
 .claim-message > em { font-family: monospace; font-style: normal; }
 .claim-namespace { display: inline-flex; width: calc(100% - 110px); min-width: 200px; margin: 0 10px 10px 0; cursor: text; }

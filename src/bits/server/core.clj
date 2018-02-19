@@ -69,7 +69,7 @@
               [:.header-section.header-section_addbit
                 [:a.button_addbit {:href "/add-bit"} "+ Add Function"]]
               [:.header-section.header-section_user 
-                [:a {:href "#"} (:user/email user)]]
+                [:a {:href "#"} (:user/display-email user)]]
               [:form.header-section.header-section_logout
                 {:action "/sign-out" :method "POST"}
                 [:input {:type "hidden", :name "csrf-token", :value (:session/csrf-token session)}]

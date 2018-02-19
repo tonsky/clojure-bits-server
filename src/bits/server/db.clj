@@ -6,6 +6,7 @@
 
 (defonce *db (ds/create-conn {
   :user/email           {#_:db.type/string :db/unique :db.unique/identity}
+  :user/display-email   {#_:db.type/string}
   :user/namespace       {#_:db.type/string :db/unique :db.unique/identity}
   :user.sign-in/token   {#_:db.type/string :db/unique :db.unique/identity}
   :user.sign-in/created {#_:db.type/long}
@@ -23,5 +24,5 @@
 
 
 (defn insert! [*db entity]
-  (ds/transact *db [entity])
-  entity)
+  (let [{:keys [db-after tempids]} (ds/transact! *db [(assoc entity :db/id -1)])]
+    (ds/entity db-after (get tempids -1))))
