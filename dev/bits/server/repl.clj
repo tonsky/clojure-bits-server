@@ -17,7 +17,7 @@
   (ds/transact! db/*db
     (concat
       [{ :db/id              -1
-         :session/id         "JPas4Y3RqNdldQZMXs9fPClQuUptETck"
+         :session/id         "ZFcB6peMogWWQ45hq4w5x9xAl0-a4fXE"
          :session/created    (System/currentTimeMillis)
          :session/csrf-token (pages.sign-in/new-token)
          :session/user       -2 }
@@ -40,6 +40,7 @@
                         ["bits.tonsky.coll/index-of" -2]
                         ["bits.tonsky.coll/zip" -2]
                         ["bits.tonsky.dom/q" -2]
+                        ["bits.tonsky/println*" -2]
                         ["bits.tonsky.string/left-pad" -2]
                         ["bits.weavejester.maps/assoc-some" -3]
                         ["bits.weavejester.maps/dissoc-in"  -3]

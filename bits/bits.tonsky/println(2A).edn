@@ -1,0 +1,1 @@
+{:bit/namespace "bits.tonsky", :bit/name "println*", :bit/docstring "Prints elements of collection each on a new line", :bit/body-clj "(fn [coll]\r\n  (doseq [el coll]\r\n    (println el))\r\n  (println \"Count:\" (count coll)))", :bit/body-cljs "(fn [coll]\r\n  (doseq [el coll]\r\n    (println el))\r\n  (println \"Count:\" (count coll)))", :bit.author/name "Nikita Prokopov"}

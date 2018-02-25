@@ -45,9 +45,9 @@ function subscribeToChange(el, cb) {
 
 window.addEventListener('load', function() {
   subscribeToChange(document.getElementById('subns'),     onSubNsChange);
+  subscribeToChange(document.getElementById('docstring'), taResize(1));
   subscribeToChange(document.getElementById('body-clj'),  taResize(3));
   subscribeToChange(document.getElementById('body-cljs'), taResize(3));
-  subscribeToChange(document.getElementById('docstring'), taResize(1));
 });
 "}}])
 
@@ -108,6 +108,19 @@ window.addEventListener('load', function() {
     "Can’t be longer than 140 characters"
     
     :else nil))
+
+
+(defn normalize-docstring [docstring]
+  (some-> docstring (str/trim)))
+
+
+(defn check-docstring [docstring]
+  (cond
+    (str/blank? docstring)
+    "Docstring is required"
+  
+    (> (count docstring) 10240)
+    "Too long, we only accept docstrings under 10 Kb"))
 
 
 (defn underline
@@ -180,19 +193,6 @@ window.addEventListener('load', function() {
           :message message}]))))
 
 
-(defn normalize-docstring [docstring]
-  (some-> docstring (str/trim)))
-
-
-(defn check-docstring [docstring]
-  (cond
-    (str/blank? docstring)
-    "Docstring is required"
-  
-    (> (count docstring) 10240)
-    "Too long, we only accept docstrings under 10 Kb"))
-
-
 (rum/defc add-bit-page [check? req]
   (let [{:bits/keys [user session]} req
         {:strs [subns name body-clj body-cljs docstring]} (:form-params req)
@@ -236,6 +236,16 @@ window.addEventListener('load', function() {
              :max-length 140
              :value name}]]
 
+        [:label {:for "docstring"} "Docstring"]
+        (when-let [error (and check? (check-docstring docstring))]
+          [:.bitform-message [:p "> " error]])
+        [:textarea
+          { :id "docstring"
+            :name "docstring"
+            :max-length 10240
+            :placeholder "What your bit does" }
+          docstring]
+
         [:label {:for "body-clj"} "Function body (Clojure)"]
         (when-let [error (and check? (check-bodies body-clj body-cljs))]
           [:.bitform-message [:p "> " error]])
@@ -270,18 +280,11 @@ window.addEventListener('load', function() {
           ; [:p "Use (fn [args] ...) form"]
           [:p "Provide either clj body, cljs or both"]]
 
-        [:label {:for "docstring"} "Docstring"]
-        (when-let [error (and check? (check-docstring docstring))]
-          [:.bitform-message [:p "> " error]])
-        [:textarea
-          { :id "docstring"
-            :name "docstring"
-            :max-length 10240
-            :placeholder "What your bit does" }
-          docstring]
-
         [:.bitform-submit
           [:button.button "Add Bit"]]
+        [:.bitform-comment
+          { :style {:margin-top 27}}
+          [:p "You’ll have 24 hours to alter & tune bit body, after that it’ll become immutable"]]
         ]]))
 
 
@@ -298,36 +301,38 @@ window.addEventListener('load', function() {
         {:user/keys [namespace]} user
         subns     (normalize-namespace subns)
         name      (normalize-name name)
-        docstring (normalize-docstring docstring)]
+        docstring (normalize-docstring docstring)
+        body-clj  (core/not-blank body-clj)
+        body-cljs (core/not-blank body-cljs)]
     (assert (some? namespace) "User namespace can’t be empty")
 
     (if (or (check-namespace namespace subns)
             (check-name namespace subns name)
             (check-bodies body-clj body-cljs)
+            (check-docstring docstring)
             (check-body body-clj)
-            (check-body body-cljs)
-            (check-docstring docstring))
+            (check-body body-cljs))
       ((core/wrap-page #(add-bit-page true %)) req)
       (let [fqn  (fqn namespace subns name)
             path (core/fqn->path fqn)
             file (io/file (str "bits/" path ".edn"))]
         (.mkdirs (.getParentFile file))
-        (spit file (pr-str #some { :bit/namespace   (symbol (bit-ns namespace subns))
-                                   :bit/name        (symbol name)
-                                   :bit/body-clj    (some-> (core/not-blank body-clj) reader.edn/read-string)
-                                   :bit/body-cljs   (some-> (core/not-blank body-cljs) reader.edn/read-string)
+        (spit file (pr-str #some { :bit/namespace   (bit-ns namespace subns)
+                                   :bit/name        name
                                    :bit/docstring   docstring
+                                   :bit/body-clj    body-clj
+                                   :bit/body-cljs   body-cljs
                                    :bit.author/name (:user/display-name user) }))
-        (db/insert! db/*db { :bit/fqn       fqn
-                             :bit/namespace (bit-ns namespace subns)
-                             :bit/name      name
-                             :bit/body-clj  body-clj
-                             :bit/body-cljs body-cljs
-                             :bit/docstring docstring
-                             :bit/author    (:db/id user) })
+        (db/insert! db/*db #some { :bit/fqn       fqn
+                                   :bit/namespace (bit-ns namespace subns)
+                                   :bit/name      name
+                                   :bit/docstring docstring
+                                   :bit/body-clj  body-clj
+                                   :bit/body-cljs body-cljs
+                                   :bit/author    (:db/id user) })
         (response/redirect (str "/bits/" path))))))
 
 
 (def routes
-  ["" {:get  {"/add-bit" (core/wrap-auth get-add-bit)}
-       :post {"/add-bit" (core/wrap-auth post-add-bit)}}])
+  {"/add-bit" {:get  (core/wrap-auth #'get-add-bit)
+               :post (core/wrap-auth #'post-add-bit)}})

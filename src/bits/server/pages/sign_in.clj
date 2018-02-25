@@ -185,8 +185,8 @@
 
 
 (def routes
-  ["" {:get  {"/request-sign-in" (core/wrap-page request-sign-in-page)
-              "/sign-in-sent"    (core/wrap-page sign-in-sent-page)
-              "/sign-in"         sign-in}
-       :post {"/request-sign-in" api-request-sign-in
-              "/sign-out"        sign-out}}])
+  {"/request-sign-in" {:get  (core/wrap-page request-sign-in-page)
+                       :post api-request-sign-in}
+   "/sign-in-sent"    {:get (core/wrap-page sign-in-sent-page)}
+   "/sign-in"         {:get sign-in}
+   "/sign-out"        {:post sign-out}})

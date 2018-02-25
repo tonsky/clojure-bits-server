@@ -18,11 +18,11 @@
   :session/user       {:db/type :db.type/ref}
 
   :bit/fqn            {#_:db.type/string :db/unique :db.unique/identity}
-  :bit/name           {#_:db.type/string}
   :bit/namespace      {#_:db.type/string}
+  :bit/name           {#_:db.type/string}
+  :bit/docstring      {#_:db.type/string}
   :bit/body-clj       {#_:db.type/string}
   :bit/body-cljs      {#_:db.type/string}
-  :bit/docstring      {#_:db.type/string}
   :bit/author         {:db/type :db.type/ref}
 }))
 
@@ -35,3 +35,8 @@
 (defn insert! [*db entity]
   (let [{:keys [db-after tempids]} (ds/transact! *db [(assoc entity :db/id -1)])]
     (ds/entity db-after (get tempids -1))))
+
+
+(defn wrap-db [handler]
+  (fn [req]
+    (handler (assoc req :bits/db @*db))))

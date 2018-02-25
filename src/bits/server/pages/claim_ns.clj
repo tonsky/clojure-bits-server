@@ -105,5 +105,5 @@
 
 
 (def routes
-  ["" {:get  {"/claim-ns" (core/wrap-auth get-claim-ns)}
-       :post {"/claim-ns" (core/wrap-auth post-claim-ns)}}])
+  {"/claim-ns" {:get  (core/wrap-auth #'get-claim-ns)
+                :post (core/wrap-auth #'post-claim-ns)}})
