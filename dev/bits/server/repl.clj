@@ -18,6 +18,7 @@
        :session/user       -2 }
      { :db/id              -2
        :user/display-email "prokopov@gmail.com"
+       :user/display-name  "Nikita Prokopov"
        :user/email         "prokopov@gmail.com"
        :user/namespace     "tonsky"}]))
 

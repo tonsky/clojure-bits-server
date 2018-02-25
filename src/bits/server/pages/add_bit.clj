@@ -309,15 +309,8 @@ window.addEventListener('load', function() {
             (check-docstring docstring))
       ((core/wrap-page #(add-bit-page true %)) req)
       (let [fqn  (fqn namespace subns name)
-            url  (core/bit-url fqn)
-            file (io/file (subs url 1))] ;; drop first slash
-        (db/insert! db/*db { :bit/fqn       fqn
-                             :bit/namespace (bit-ns namespace subns)
-                             :bit/name      name
-                             :bit/body-clj  body-clj
-                             :bit/body-cljs body-cljs
-                             :bit/docstring docstring
-                             :bit/author    (:db/id user) })
+            path (core/fqn->path fqn)
+            file (io/file (str "bits/" path ".edn"))]
         (.mkdirs (.getParentFile file))
         (spit file (pr-str #some { :bit/namespace   (symbol (bit-ns namespace subns))
                                    :bit/name        (symbol name)
@@ -325,7 +318,14 @@ window.addEventListener('load', function() {
                                    :bit/body-cljs   (some-> (core/not-blank body-cljs) reader.edn/read-string)
                                    :bit/docstring   docstring
                                    :bit.author/name (:user/display-name user) }))
-        (response/redirect url)))))
+        (db/insert! db/*db { :bit/fqn       fqn
+                             :bit/namespace (bit-ns namespace subns)
+                             :bit/name      name
+                             :bit/body-clj  body-clj
+                             :bit/body-cljs body-cljs
+                             :bit/docstring docstring
+                             :bit/author    (:db/id user) })
+        (response/redirect (str "/bits/" path))))))
 
 
 (def routes

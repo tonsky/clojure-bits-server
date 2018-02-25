@@ -64,7 +64,7 @@
       (print-errors))
     (->
       (bidi.ring/make-handler
-        ["/raw/bits" (bidi.ring/->Files {:dir "bits"})])
+        ["/bits" {{:uri #(str/ends-with? % ".edn")} (bidi.ring/->Files {:dir "bits"})}])
       (with-headers { "Cache-Control" "no-cache"
                       "Expires"       "-1" }))
     (->

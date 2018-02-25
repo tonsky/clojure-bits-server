@@ -12,6 +12,12 @@
   (System/currentTimeMillis))
 
 
+(defmacro one-of? [x & opts]
+  (let [xsym (gensym)]
+   `(let [~xsym ~x]
+      (or ~@(map (fn [o] `(= ~xsym ~o)) opts)))))
+
+
 (defn encode-uri-component [s]
   (-> s
       (java.net.URLEncoder/encode "UTF-8")
@@ -32,11 +38,24 @@
     (str path "?")))
 
 
-(defn bit-url [fqn]
-  (as-> fqn %
-      (str/replace % "-" "_")
-      (str/replace % "." "/")
-      (str "/" % ".edn")))
+(defn escape-char [ch]
+  (cond
+    (<= (int \a) (int ch) (int \z))   ch
+    (<= (int \A) (int ch) (int \Z))   ch
+    (<= (int \0) (int ch) (int \9))   ch
+    (one-of? ch \_ \- \. \+ \! \= \/) ch
+    (<= 128 (int ch))                 ch
+    :else (str "(" (str/upper-case (Integer/toString (int ch) 16)) ")")))
+
+
+(defn fqn->path [fqn]
+  (str/join (map escape-char fqn)))
+
+
+(defn path->fqn [path]
+  (str/replace path #"\(([0-9A-F]+)\)"
+    (fn [[_ hex]]
+      (str (char (Integer/parseInt hex 16))))))
 
 
 (defn spy [& xs]
