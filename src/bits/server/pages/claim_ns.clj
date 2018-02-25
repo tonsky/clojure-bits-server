@@ -1,4 +1,4 @@
-(ns bits.server.edit
+(ns bits.server.pages.claim-ns
   (:require
     [clojure.string :as str]
     
@@ -10,18 +10,11 @@
     [bits.server.core :as core]))
 
 
-(rum/defc add-bit-page [req]
-  [:div "ADD BIT PAGE"])
+(def ns-reserved? #{"client" "server" "bits"})
 
 
-(defn add-bit [req]
-  (let [user (:bits/user req)]
-    (if-some [ns (:user/namespace user)]
-      ((core/wrap-page add-bit-page) req)
-      (response/redirect "/claim-ns"))))
-
-
-(def ns-reserved? #{"client" "server"})
+(defn ns-normalize [s]
+  (-> s str/lower-case str/trim))
 
 
 (rum/defc claim-ns-page [req]
@@ -55,22 +48,24 @@
             "short"              [:.claim-message "> Name’s too short. Please use at least 3 characters"]
             "malformed"          [:.claim-message "> We only allow a-z, 0-9 and -"])
           [:.input.claim-namespace
-            {:on-click "document.querySelector('.claim-namespace-input').focus()"}
-            [:.claim-namespace-prefix "bits."]
-            [:input.claim-namespace-input {:type "text" :autofocus true :name "namespace" :placeholder placeholder :value namespace}]]
+            {:on-click "this.querySelector('input').focus()"}
+            [:.input-prefix.claim-namespace-prefix "bits."]
+            [:input.claim-namespace-input
+              {:type "text"
+               :autofocus true
+               :name "namespace"
+               :placeholder placeholder
+               :value namespace}]]
           [:button.button.claim-submit "Claim"]]]]))
 
-(defn claim-ns [req]
+
+(defn get-claim-ns [req]
   (if (some? (:user/namespace (:bits/user req)))
     (response/redirect "/add-bit")
     ((core/wrap-page claim-ns-page) req)))
 
 
-(defn ns-normalize [s]
-  (-> s str/lower-case str/trim))
-
-
-(defn do-claim-ns [req]
+(defn post-claim-ns [req]
   (let [{:strs [namespace csrf-token]} (:form-params req)
         {:bits/keys [session user]} req
         namespace (ns-normalize namespace)]
@@ -110,7 +105,5 @@
 
 
 (def routes
-  ["" {:get  {"/add-bit"  (core/wrap-auth add-bit)
-              "/claim-ns" (core/wrap-auth claim-ns)}
-       :post {"/add-bit"  (core/wrap-auth add-bit)
-              "/claim-ns" (core/wrap-auth do-claim-ns)}}])
+  ["" {:get  {"/claim-ns" (core/wrap-auth get-claim-ns)}
+       :post {"/claim-ns" (core/wrap-auth post-claim-ns)}}])

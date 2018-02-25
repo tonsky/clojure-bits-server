@@ -32,9 +32,26 @@
     (str path "?")))
 
 
-(defn spy [res]
-  (println res)
-  res)
+(defn bit-url [fqn]
+  (as-> fqn %
+      (str/replace % "-" "_")
+      (str/replace % "." "/")
+      (str "/" % ".edn")))
+
+
+(defn spy [& xs]
+  (apply prn xs)
+  (last xs))
+
+
+(defmacro cond+ [& clauses]
+  (when clauses
+    (let [[c1 c2 & cs] clauses]
+      (cond
+        (< (count clauses) 2) (throw (IllegalArgumentException. "cond requires an even number of forms"))
+        (= c1 :let)          `(let ~c2 (cond+ ~@cs))
+        (= c1 :do)           `(do ~c2 (cond+ ~@cs))
+        :else                `(if ~c1 ~c2 (cond+ ~@cs))))))
 
 
 (defn read-cookies [handler]

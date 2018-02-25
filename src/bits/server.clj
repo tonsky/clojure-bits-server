@@ -13,8 +13,10 @@
     
     [bits.server.db :as db]
     [bits.server.core :as core]
-    [bits.server.edit :as edit]
-    [bits.server.sign-in :as sign-in]))
+    [bits.server.pages.sign-in :as pages.sign-in]
+    [bits.server.pages.claim-ns :as pages.claim-ns]
+    [bits.server.pages.add-bit :as pages.add-bit]
+    ))
 
 
 (defn print-errors [handler]
@@ -51,9 +53,10 @@
     (->
       (some-fn
         (bidi.ring/make-handler routes)
-        (bidi.ring/make-handler edit/routes)
-        (bidi.ring/make-handler sign-in/routes))
-      (sign-in/wrap-session)
+        (bidi.ring/make-handler pages.sign-in/routes)
+        (bidi.ring/make-handler pages.claim-ns/routes)
+        (bidi.ring/make-handler pages.add-bit/routes))
+      (pages.sign-in/wrap-session)
       (ring.middleware.params/wrap-params)
       (core/read-cookies)
       (with-headers { "Cache-Control" "no-cache"
@@ -61,7 +64,7 @@
       (print-errors))
     (->
       (bidi.ring/make-handler
-        ["/bits" (bidi.ring/->Files {:dir "bits"})])
+        ["/raw/bits" (bidi.ring/->Files {:dir "bits"})])
       (with-headers { "Cache-Control" "no-cache"
                       "Expires"       "-1" }))
     (->

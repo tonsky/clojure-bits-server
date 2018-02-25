@@ -15,6 +15,14 @@
   :session/created    {#_:db.type/long}
   :session/csrf-token {#_:db.type/string}
   :session/user       {:db/type :db.type/ref}
+
+  :bit/fqn            {#_:db.type/string :db/unique :db.unique/identity}
+  :bit/name           {#_:db.type/string}
+  :bit/namespace      {#_:db.type/string}
+  :bit/body-clj       {#_:db.type/string}
+  :bit/body-cljs      {#_:db.type/string}
+  :bit/docstring      {#_:db.type/string}
+  :bit/author         {:db/type :db.type/ref}
 }))
 
 

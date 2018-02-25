@@ -1,15 +1,11 @@
 * { box-sizing: border-box; vertical-align: top; }
-html { background: #F9F9F9; }
-body {
-  font: 18px/140% sans-serif;
-  margin: 0;
-}
+body { font: 18px/140% sans-serif; margin: 0; }
 a { color: inherit; text-decoration: none; }
-p, h1 { margin: 0.5em 0; }
+p, h1, pre { margin: 0.5em 0; }
 h1 { font-size: 24px; }
 
 input, button, .button, textarea { font: inherit; outline: none; }
-input[type=text], textarea, .input { background: #EEE; border: none; border-bottom: 2px solid black; border-radius: 4px 4px 0 0; }
+input[type=text], textarea, .input { background: #f2f2f2; border: none; border-bottom: 2px solid black; border-radius: 4px 4px 0 0; }
 input[type=text], textarea { padding: 15px 15px 13px; }
 input[type=text]::placeholder, textarea::placeholder { font-style: italic; }
 
@@ -43,11 +39,28 @@ button:hover, .button:hover { background: #ffe53b; }
 .message > p > .button { margin: 30px 0 -10px 0; }
 .message > p > em { font-style: italic; }
 
+.input { display: flex; min-width: 200px; margin: 0 10px 10px 0; cursor: text; }
+.input-prefix { user-select: none; padding: 14px 0 14px 15px; }
+.input > input[type=text] { flex-grow: 1; border: none; background: transparent; padding: 14px 15px 14px 3px; min-width: 0; font-weight: bold; }
+.input > input[type=text]::placeholder { font-weight: normal; }
+
 .claim { width: 100%; min-width: 240px; max-width: 650px; padding: 20px 20px 10px 20px; }
 .claim-intro { max-width: 500px; margin-left: auto; margin-right: auto; }
 .claim-message { color: #c33; margin: 0 0 15px 0; }
 .claim-message > em { font-family: monospace; font-style: normal; }
-.claim-namespace { display: inline-flex; width: calc(100% - 110px); min-width: 200px; margin: 0 10px 10px 0; cursor: text; }
-.claim-namespace-prefix { user-select: none; padding: 14px 0 14px 15px; }
-input[type=text].claim-namespace-input { flex-grow: 1; border: none; background: transparent; padding: 14px 15px 14px 3px; min-width: 0; }
+.claim-namespace { display: inline-flex; width: calc(100% - 110px); }
 .claim-submit { width: 100px; margin: 0 0 10px 0; }
+
+.code { font-family: 'Fira Code'; font-size: 15px; }
+.bitform { display: grid; grid-template-columns: 1fr minmax(240px,500px) 1fr; }
+.bitform > label { grid-column: 2/3; margin: 27px 0 9px 0; }
+.bitform-message { grid-column: 2/3; color: #c33; }
+.bitform-message > pre { margin: -4px 0 -10px 0; } 
+.bitform-message > p { margin: -4px 0 10px 0; }
+.bitform > .input,
+.bitform > textarea { grid-column: 2/3; align-self: start; }
+.bitform > textarea { resize: none; height: 121px; }
+.bitform > textarea::placeholder { font-style: normal; }
+.bitform-submit { grid-column: 2/4; margin: 27px 0 27px 0; }
+.bitform-comment { grid-column: 3; min-width: 240px; max-width: 400px; font-style: italic; font-size: 16px; padding: 0 10px 0 30px; }
+.bitform-comment > p { margin-top: 0; }
