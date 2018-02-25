@@ -1,8 +1,8 @@
-{:bits/namespace   bits.tonsky.coll
- :bits/name        find
- :bits/doc         "Return first element that matches `pred`"
- :bits/body-clj    (fn [pred xs]
-                     (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))
- :bits/body-cljs   (fn [pred xs]
-                    (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))
- :bits.author/name "Nikita Prokopov" }
+{:bit/namespace   "bits.tonsky.coll"
+ :bit/name        "find"
+ :bit/docstring   "Return first element that matches `pred`"
+ :bit/body-clj    "(fn [pred xs]
+   (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))"
+ :bit/body-cljs   "(fn [pred xs]
+  (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))"
+ :bit.author/name "Nikita Prokopov" }

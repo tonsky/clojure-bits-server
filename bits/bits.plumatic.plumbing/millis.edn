@@ -1,0 +1,6 @@
+{:bit/namespace   "bits.plumatic.plumbing"
+ :bit/name        "millis"
+ :bit/docstring   "millis"
+ :bit/body-clj    "(fn [] (System/currentTimeMillis))"
+ :bit/body-cljs   "(fn [] (.getTime (js/Date.)))"
+ :bit.author/name "Plumatic"}

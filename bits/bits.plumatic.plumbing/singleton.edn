@@ -1,0 +1,12 @@
+{:bit/namespace   "bits.plumatic.plumbing"
+ :bit/name        "singleton"
+ :bit/docstring   "returns (first xs) when xs has only 1 element"
+ :bit/body-clj    "(fn [xs]
+  (when-let [xs (seq xs)]
+    (when-not (next xs)
+      (first xs))))"
+ :bit/body-cljs   "(fn [xs]
+  (when-let [xs (seq xs)]
+    (when-not (next xs)
+      (first xs))))"
+ :bit.author/name "Plumatic"}

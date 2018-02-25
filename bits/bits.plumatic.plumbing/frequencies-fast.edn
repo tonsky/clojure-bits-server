@@ -1,0 +1,11 @@
+{:bit/namespace   "bits.plumatic.plumbing"
+ :bit/name        "frequencies-fast"
+ :bit/docstring   "Like clojure.core/frequencies, but faster.
+Uses Java's equal/hash, so may produce incorrect results if
+given values that are = but not .equal"
+ :bit/body-clj    "(fn [xs]
+  (let [res (java.util.HashMap.)]
+    (doseq [x xs]
+      (.put res x (unchecked-inc (int (or (.get res x) 0)))))
+    (into {} res)))"
+ :bit.author/name "Plumatic"}

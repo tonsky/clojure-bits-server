@@ -1,10 +1,10 @@
-{:bits/namespace   bits.tonsky.coll
- :bits/name        zip
- :bits/doc         "Takes multiple collections a b c ... and returns a single collection of
+{:bit/namespace   "bits.tonsky.coll"
+ :bit/name        "zip"
+ :bit/docstring   "Takes multiple collections a b c ... and returns a single collection of
 tuples ([a0 b0 c0 ...] [a1 b1 c1 ...] [a2 b2 c2 ...] ...) with the lenght
 of shortest collection"
- :bits/body-clj    (fn [& as]
-                     (apply map vector as))
- :bits/body-cljs   (fn [& as]
-                     (apply map vector as))
- :bits.author/name "Nikita Prokopov" }
+ :bit/body-clj    "(fn [& as]
+  (apply map vector as))"
+ :bit/body-cljs   "(fn [& as]
+  (apply map vector as))"
+ :bit.author/name "Nikita Prokopov" }
