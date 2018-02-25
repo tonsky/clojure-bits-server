@@ -1,11 +1,11 @@
 (ns bits.server.pages.add-bit
   (:require
-    [clojure.tools.reader.edn :as reader.edn]
-    [clojure.tools.reader.reader-types :as reader.reader-types]
+    [clojure.string :as str]
+    [clojure.java.io :as io]
     [clojure.spec.alpha :as spec]
     [clojure.core.specs.alpha :as core.spec]
-    
-    [clojure.string :as str]
+    [clojure.tools.reader.edn :as reader.edn]
+    [clojure.tools.reader.reader-types :as reader.reader-types]
     
     [rum.core :as rum]
     [datascript.core :as ds]
@@ -97,9 +97,6 @@ window.addEventListener('load', function() {
 
     (re-matches #"\d" (subs name 0 1))
     "Can’t start with a number"
-
-    (= name "/")
-    nil
 
     (some #(when (some? (str/index-of name %)) %) "`~@#%^()[]{}\\:;\"',/")
     (str "Can’t contain " (some #(when (some? (str/index-of name %)) %) "`~@#%^()[]{}\\:;\"',/"))
@@ -311,15 +308,24 @@ window.addEventListener('load', function() {
             (check-body body-cljs)
             (check-docstring docstring))
       ((core/wrap-page #(add-bit-page true %)) req)
-      (let [fqn (fqn namespace subns name)]
+      (let [fqn  (fqn namespace subns name)
+            url  (core/bit-url fqn)
+            file (io/file (subs url 1))] ;; drop first slash
         (db/insert! db/*db { :bit/fqn       fqn
-                             :bit/name      name
                              :bit/namespace (bit-ns namespace subns)
+                             :bit/name      name
                              :bit/body-clj  body-clj
                              :bit/body-cljs body-cljs
                              :bit/docstring docstring
                              :bit/author    (:db/id user) })
-        (response/redirect (str "/raw" (core/bit-url fqn)))))))
+        (.mkdirs (.getParentFile file))
+        (spit file (pr-str #some { :bit/namespace   (symbol (bit-ns namespace subns))
+                                   :bit/name        (symbol name)
+                                   :bit/body-clj    (some-> (core/not-blank body-clj) reader.edn/read-string)
+                                   :bit/body-cljs   (some-> (core/not-blank body-cljs) reader.edn/read-string)
+                                   :bit/docstring   docstring
+                                   :bit.author/name (:user/display-name user) }))
+        (response/redirect url)))))
 
 
 (def routes

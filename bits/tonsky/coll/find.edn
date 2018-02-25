@@ -1,4 +1,8 @@
-{:meta {:doc "Return first element that matches `pred`"
-        :tag String}
- :body (fn [pred xs]
-         (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))}
+{:bits/namespace   bits.tonsky.coll
+ :bits/name        find
+ :bits/doc         "Return first element that matches `pred`"
+ :bits/body-clj    (fn [pred xs]
+                     (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))
+ :bits/body-cljs   (fn [pred xs]
+                    (reduce (fn [_ x] (when (pred x) (reduced x))) nil xs))
+ :bits.author/name "Nikita Prokopov" }

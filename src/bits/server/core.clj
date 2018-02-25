@@ -54,6 +54,19 @@
         :else                `(if ~c1 ~c2 (cond+ ~@cs))))))
 
 
+(defn reader-some [form]
+  (cond
+    (map? form)
+    `(reduce-kv (fn [m# k# v#] (if (some? v#) (assoc m# k# v#) m#)) {} ~form)
+
+    (vector? form)
+    `(reduce (fn [acc# el#] (if (some? el#) (conj acc# el#) acc#)) [] ~form)))
+
+
+(defn not-blank [s]
+  (if (str/blank? s) nil s))
+
+
 (defn read-cookies [handler]
   (fn [req]
     (let [cookie  (get-in req [:headers "cookie"] "")
