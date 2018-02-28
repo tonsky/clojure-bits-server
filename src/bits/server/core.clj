@@ -148,6 +148,13 @@
         content]])
 
 
+(rum/defc avatar-mask []
+  [:svg {:height 0 :width 0}
+    [:defs
+      [:clipPath {:id "avatar-mask"}
+        [:path {:d "M 0 25C 0 5.13828 5.13828 0 25 0C 44.8617 0 50 5.13827 50 25C 50 44.8617 44.8617 50 25 50C 5.13827 50 0 44.8617 0 25Z"}]]]])
+
+
 (defn wrap-page [handler]
   (fn [req]
     { :status  200

@@ -72,7 +72,7 @@ button:hover, .button:hover { background: #ffe53b; }
 .bitview-body-lang { color: #999; float: right; background: #fff; padding: 11px 8px 4px 8px; border-radius: 0 0 4px 4px; margin: -14px -7px 0 0; }
 .bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; margin: 28px 0; }
 .bitview-footer { display: flex; justify-content: space-between; align-items: baseline; }
-.bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; border-radius: 50%; }
+.bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; clip-path: url(#avatar-mask); }
 .bitview-author { font-size: 16px; }
 .bitview-author > a > .link { border-bottom: 2px solid #ffdf0f; }
 .bitview-author > a:hover > .link { color: #555; }

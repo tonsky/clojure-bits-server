@@ -38,7 +38,8 @@
             [:span.link (or (:user/display-name author)
                             (:user/namespace author))]]]
         (when (= author user)
-          [:a.button.bitview-edit {:href (str "/bits/" ns "/" name "/edit")} "Edit"])]]))
+          [:a.button.bitview-edit {:href (str "/bits/" ns "/" name "/edit")} "Edit"])]
+      (core/avatar-mask)]))
 
 
 (def routes
