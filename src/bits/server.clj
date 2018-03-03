@@ -11,6 +11,8 @@
     [ring.util.response :as response]
     [org.httpkit.server :as http-kit]
     
+    [bits.core :as bits]
+    [bits.server.readers]
     [bits.server.db :as db]
     [bits.server.core :as core]
     [bits.server.pages.sign-in :as pages.sign-in]
@@ -38,7 +40,7 @@
       (for [d (ds/datoms db :avet :bit/fqn)
             :let [bit (ds/entity db (:e d))
                   fqn (:bit/fqn bit)]]
-        [:p [:a {:href (str "/bits/" (core/fqn->path fqn))} fqn]])]))
+        [:p [:a {:href (str "/bits/" (bits/fqn->path fqn))} fqn]])]))
 
 
 (defn with-headers [handler headers]

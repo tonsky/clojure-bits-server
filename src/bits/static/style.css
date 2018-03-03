@@ -27,7 +27,7 @@ button:hover, .button:hover { background: #ffe53b; }
 .header-section > .button_addbit { padding: 10px 20px; background: #ffdf0f; margin-right: 10px; }
 .header-section > .button_addbit:hover { background: #ffe53b; text-decoration: none; }
 
-.page_center { min-width: 480px; max-width: 700px; width: fit-content; margin: 42px auto; }
+.page_center { min-width: 480px; max-width: 800px; width: fit-content; margin: 42px auto; }
 .page_middle { display: flex; justify-content: center; align-items: center; height: calc(100vh - 200px); }
 
 .signin { width: 100%; min-width: 240px; max-width: 500px; padding: 20px 20px 10px 20px; }
@@ -55,8 +55,8 @@ button:hover, .button:hover { background: #ffe53b; }
 .code { font-family: 'Fira Code'; font-size: 15px; }
 .bitform { display: grid; grid-template-columns: 1fr minmax(240px,500px) 1fr; }
 .bitform > label { grid-column: 2/3; margin: 27px 0 9px 0; }
-.bitform-message { grid-column: 2/3; color: #c33; }
-.bitform-message > pre { margin: -4px 0 -10px 0; } 
+.bitform-message { grid-column: 2/4; color: #c33; }
+.bitform-message > pre { margin: -4px 0 -10px 0; white-space: pre-wrap; word-break: break-all; } 
 .bitform-message > p { margin: -4px 0 10px 0; }
 .bitform > .input,
 .bitform > textarea { grid-column: 2/3; align-self: start; }
@@ -69,7 +69,6 @@ button:hover, .button:hover { background: #ffe53b; }
 .bitview-namespace { color: #999; display: inline; font-size: 24px; font-weight: normal; }
 .bitview-name { font-size: 36px; font-weight: bold; line-height: 48px; }
 .bitview-docstring { font-style: normal; margin: 0px 0 24px; white-space: pre-wrap; }
-.bitview-body-lang { color: #999; float: right; background: #fff; padding: 11px 8px 4px 8px; border-radius: 0 0 4px 4px; margin: -14px -7px 0 0; }
 .bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; margin: 28px 0; }
 .bitview-footer { display: flex; justify-content: space-between; align-items: baseline; }
 .bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; clip-path: url(#avatar-mask); }

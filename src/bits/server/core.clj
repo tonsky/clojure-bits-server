@@ -8,92 +8,13 @@
 (def ^:dynamic dev? true) ;; FIXME
 
 
-(defn now []
-  (System/currentTimeMillis))
-
-
-(defmacro one-of? [x & opts]
-  (let [xsym (gensym)]
-   `(let [~xsym ~x]
-      (or ~@(map (fn [o] `(= ~xsym ~o)) opts)))))
-
-
-(defn encode-uri-component [s]
-  (-> s
-      (java.net.URLEncoder/encode "UTF-8")
-      (str/replace #"\+"   "%20")
-      (str/replace #"\%21" "!")
-      (str/replace #"\%27" "'")
-      (str/replace #"\%28" "(")
-      (str/replace #"\%29" ")")
-      (str/replace #"\%7E" "~")))
-
-
 (defn url [path query]
   (->>
     (for [[k v] query
           :when (some? v)]
-      (str (name k) "=" (encode-uri-component v)))
+      (str (name k) "=" (java.net.URLEncoder/encode v "UTF-8")))
     (str/join "&")
     (str path "?")))
-
-
-(defn escape-char [ch]
-  (cond
-    (<= (int \a) (int ch) (int \z))   ch
-    (<= (int \A) (int ch) (int \Z))   ch
-    (<= (int \0) (int ch) (int \9))   ch
-    (one-of? ch \_ \- \. \+ \! \= \/) ch
-    (<= 128 (int ch))                 ch
-    :else (str "(" (str/upper-case (Integer/toString (int ch) 16)) ")")))
-
-
-(defn fqn->path [fqn]
-  (str/join (map escape-char fqn)))
-
-
-(defn path->fqn [path]
-  (str/replace path #"\(([0-9A-F]+)\)"
-    (fn [[_ hex]]
-      (str (char (Integer/parseInt hex 16))))))
-
-
-(defn md5 [^String str]
-  (let [bytes (-> (java.security.MessageDigest/getInstance "MD5")
-                  (.digest (.getBytes str)))]
-    (-> (areduce bytes i s (StringBuilder. (* 2 (alength bytes)))
-          (doto s
-            (.append (Integer/toHexString (unsigned-bit-shift-right (bit-and (aget bytes i) 0xF0) 4)))
-            (.append (Integer/toHexString (bit-and (aget bytes i) 0x0F)))))
-        (.toString))))
-
-
-(defn spy [& xs]
-  (apply prn xs)
-  (last xs))
-
-
-(defmacro cond+ [& clauses]
-  (when clauses
-    (let [[c1 c2 & cs] clauses]
-      (cond
-        (< (count clauses) 2) (throw (IllegalArgumentException. "cond requires an even number of forms"))
-        (= c1 :let)          `(let ~c2 (cond+ ~@cs))
-        (= c1 :do)           `(do ~c2 (cond+ ~@cs))
-        :else                `(if ~c1 ~c2 (cond+ ~@cs))))))
-
-
-(defn reader-some [form]
-  (cond
-    (map? form)
-    `(reduce-kv (fn [m# k# v#] (if (some? v#) (assoc m# k# v#) m#)) {} ~form)
-
-    (vector? form)
-    `(reduce (fn [acc# el#] (if (some? el#) (conj acc# el#) acc#)) [] ~form)))
-
-
-(defn not-blank [s]
-  (if (str/blank? s) nil s))
 
 
 (defn read-cookies [handler]

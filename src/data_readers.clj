@@ -1,1 +1,2 @@
-{some bits.server.core/reader-some}
+{some  bits.server.readers/some
+ trace bits.server.readers/trace}

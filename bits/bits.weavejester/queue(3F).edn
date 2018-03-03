@@ -1,1 +1,0 @@
-{:bit/namespace "bits.weavejester", :bit/name "queue?", :bit/docstring "Returns true if x implements clojure.lang.PersistentQueue.", :bit/body-clj "(fn [x]\r\n  (instance? clojure.lang.PersistentQueue x))", :bit/body-cljs "(fn [x]\r\n  (instance? cljs.core.PersistentQueue x))", :bit.author/name "James Reeves"}

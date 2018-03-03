@@ -1,8 +1,0 @@
-{:bit/namespace "bits.tonsky.dom"
- :bit/name      "q"
- :bit/body-cljs "(fn
-  ([sel]
-    (js/document.querySelector sel))
-  ([el sel]
-    (.querySelector el sel)))"
- :bit/docstring "Finds a dom selector"}

@@ -21,8 +21,7 @@
   :bit/namespace      {#_:db.type/string}
   :bit/name           {#_:db.type/string}
   :bit/docstring      {#_:db.type/string}
-  :bit/body-clj       {#_:db.type/string}
-  :bit/body-cljs      {#_:db.type/string}
+  :bit/body           {#_:db.type/string}
   :bit/author         {:db/type :db.type/ref}
 }))
 

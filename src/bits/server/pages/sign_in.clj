@@ -5,9 +5,13 @@
     [rum.core :as rum]
     [datascript.core :as ds]
     [ring.util.response :as response]
-    
+
+    [bits.core :as bits]    
     [bits.server.db :as db]
     [bits.server.core :as core]))
+
+
+(bits/require [bits.tonsky.time :as time :just [now]])
 
 
 (def session-ttl-ms (* 14 24 60 60 1000)) ;; 2 weeks
@@ -47,7 +51,7 @@
     (ds/transact! db/*db
       [{ :db/id                (:db/id user)
          :user.sign-in/token   token
-         :user.sign-in/created (core/now) }])
+         :user.sign-in/created (time/now) }])
     (if true ;; TODO sent email
       (response/redirect
         (core/url "/sign-in-sent"
@@ -95,7 +99,7 @@
           (send-sign-in! user email display-email)
 
           ;; user, token, not expired yet
-          (<= (- (core/now) (:user.sign-in/created user)) sign-in-ttl-ms)
+          (<= (- (time/now) (:user.sign-in/created user)) sign-in-ttl-ms)
           (response/redirect 
             (core/url "/sign-in-sent"
               {:message       "already-sent"
@@ -138,7 +142,7 @@
       (nil? user)
       (response/redirect (core/url "/request-sign-in" {:error "sign-in-token-invalid", :email email}))
 
-      (> (- (core/now) (:user.sign-in/created user)) sign-in-ttl-ms)
+      (> (- (time/now) (:user.sign-in/created user)) sign-in-ttl-ms)
       (response/redirect (core/url "/request-sign-in" {:error "sign-in-token-expired", :email email}))
 
       :else
@@ -173,7 +177,7 @@
           session'   (or session
                          (db/insert! db/*db
                            { :session/id         (new-token)
-                             :session/created    (core/now)
+                             :session/created    (time/now)
                              :session/csrf-token (new-token) }))
           req'       (assoc req
                        :bits/session session'
