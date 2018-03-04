@@ -2,6 +2,7 @@
 body { font: 18px/140% sans-serif; margin: 0; }
 a { color: inherit; text-decoration: none; }
 p, h1, pre { margin: 0.5em 0; }
+pre { white-space: pre-wrap; word-break: break-word; }
 h1 { font-size: 24px; }
 
 input, button, .button, textarea { font: inherit; outline: none; }
@@ -9,7 +10,7 @@ input[type=text], textarea, .input { background: #f2f2f2; border: none; border-b
 input[type=text], textarea { padding: 15px 15px 13px; }
 input[type=text]::placeholder, textarea::placeholder { font-style: italic; }
 
-button, .button { display: inline-block; padding: 15px 15px 15px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; }
+button, .button { display: inline-block; padding: 14px 15px 16px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; }
 button:hover, .button:hover { background: #ffe53b; }
 
 .page, .header-inner { width: 100%; margin: 0 auto; padding: 0 20px; }
@@ -40,7 +41,7 @@ button:hover, .button:hover { background: #ffe53b; }
 .message > p > .button { margin: 30px 0 -10px 0; }
 .message > p > em { font-style: italic; }
 
-.input { display: flex; min-width: 200px; margin: 0 10px 10px 0; cursor: text; }
+.input { display: flex; min-width: 200px; cursor: text; }
 .input-prefix { user-select: none; padding: 14px 0 14px 15px; }
 .input > input[type=text] { flex-grow: 1; border: none; background: transparent; padding: 14px 15px 14px 3px; min-width: 0; font-weight: bold; }
 .input > input[type=text]::placeholder { font-weight: normal; }
@@ -49,14 +50,14 @@ button:hover, .button:hover { background: #ffe53b; }
 .claim-intro { max-width: 500px; margin-left: auto; margin-right: auto; }
 .claim-message { color: #c33; margin: 0 0 15px 0; }
 .claim-message > em { font-family: monospace; font-style: normal; }
-.claim-namespace { display: inline-flex; width: calc(100% - 110px); }
+.claim-namespace { display: inline-flex; width: calc(100% - 110px); margin: 0 10px 10px 0; }
 .claim-submit { width: 100px; margin: 0 0 10px 0; }
 
 .code { font-family: 'Fira Code'; font-size: 15px; }
-.bitform { display: grid; grid-template-columns: 1fr minmax(240px,500px) 1fr; }
+.bitform { display: grid; grid-template-columns: 1fr minmax(240px,750px) 1fr; }
 .bitform > label { grid-column: 2/3; margin: 27px 0 9px 0; }
 .bitform-message { grid-column: 2/4; color: #c33; }
-.bitform-message > pre { margin: -4px 0 -10px 0; white-space: pre-wrap; word-break: break-all; } 
+.bitform-message > pre { margin: -4px 0 -10px 0; } 
 .bitform-message > p { margin: -4px 0 10px 0; }
 .bitform > .input,
 .bitform > textarea { grid-column: 2/3; align-self: start; }

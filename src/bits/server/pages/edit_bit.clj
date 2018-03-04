@@ -1,4 +1,4 @@
-(ns bits.server.pages.add-bit
+(ns bits.server.pages.edit-bit
   (:require
     [clojure.string :as str]
     [clojure.java.io :as io]
@@ -73,7 +73,7 @@ window.addEventListener('load', function() {
     "Can’t be longer than 140 characters"))
 
 
-(defn check-body [user-ns subns body]
+(defn check-body [old-fqn user-ns subns body]
   (try
     (bits/cond+
       (str/blank? body)
@@ -99,6 +99,9 @@ window.addEventListener('load', function() {
       :let [name (:name fn-clj)
             fqn  (fqn user-ns subns name)]
 
+      (= fqn old-fqn) ;; no rename
+      nil
+
       (some? (ds/entity @db/*db [:bit/fqn fqn]))
       { :code (bits/underline (str name))
         :message (str "Function `" fqn "` already exists") }
@@ -119,16 +122,23 @@ window.addEventListener('load', function() {
          :message message}))))
 
 
-(rum/defc add-bit-page [check? req]
+(rum/defc edit-bit-page [check? req]
   (let [{:bits/keys [user session]} req
         {:user/keys [namespace]} user
-        {:strs [subns body]} (:form-params req)
-        subns (normalize-namespace subns)]
+        old-fqn (:fqn (:route-params req))
+        edit?   (some? old-fqn)
+        old-bit (when edit?
+                  (ds/entity @db/*db [:bit/fqn old-fqn]))
+        subns   (or (some-> (get (:form-params req) "subns") (normalize-namespace))
+                    (when edit?
+                      (str/join "." (drop 2 (str/split (:bit/namespace old-bit) #"\.")))))
+        body    (or (get (:form-params req) "body")
+                    (when edit? (:bit/body old-bit)))]
     [:.page
       (script)
 
       [:form.bitform
-        { :action "/add-bit" :method "POST" }
+        { :action "" :method "POST" }
         [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
 
         [:label {:for "subns"} "Sub-namespace (optional)"]
@@ -147,7 +157,7 @@ window.addEventListener('load', function() {
           [:p "We recommend grouping your fns into semantically named sub-namespaces, e.g. bits.tonsky.coll / .string / .time / .logic etc"]]
 
         [:label {:for "body"} "Function body"]
-        (when-let [{:keys [code message]} (and check? (check-body namespace subns body))]
+        (when-let [{:keys [code message]} (and check? (check-body old-fqn namespace subns body))]
           [:.bitform-message
             (when (some? code) [:pre.code code])
             (when (some? message) [:p (when (nil? code) "> ") message])])
@@ -158,49 +168,89 @@ window.addEventListener('load', function() {
             :placeholder "(defn <name>\n  \"<docstring>\"\n  [args]\n  ...)" }
           body]
         [:.bitform-comment
-          [:p "Use (defn <name> <docstring> [args] ...) form"]
-          [:p "Conditional reads are allowed"]]
+          [:p "Use (defn <name> <docstring> [args] ...) form"]]
 
         [:.bitform-submit
-          [:button.button "Add Bit"]]
-        [:.bitform-comment
-          { :style {:margin-top 27}}
-          [:p "You’ll have 24 hours to alter & tune bit body, after that it’ll become immutable"]]
+          [:button.button (if edit? "Update Bit" "Add Bit")]]
+        (when-not edit?
+          [:.bitform-comment
+            { :style {:margin-top 27}}
+            ;; TODO license
+            [:p "You’ll have 24 hours to alter & tune bit body, after that it’ll become immutable"]])
         ]]))
 
 
 (defn get-add-bit [req]
   (let [user (:bits/user req)]
     (if-some [ns (:user/namespace user)]
-      ((core/wrap-page #(add-bit-page false %)) req)
+      ((core/wrap-page #(edit-bit-page false %)) req)
       (response/redirect "/claim-ns"))))
 
 
-(defn post-add-bit [req]
-  (let [{:bits/keys [user session]} req
-        {:strs [subns body]} (:form-params req)
-        {:user/keys [namespace]} user
-        subns (normalize-namespace subns)]
-    (assert (some? namespace) "User namespace can’t be empty")
+(defn get-edit-bit [req]
+  ((core/wrap-page #(edit-bit-page false %)) req))
 
-    (if (or (check-namespace namespace subns)
-            (check-body namespace subns body))
-      ((core/wrap-page #(add-bit-page true %)) req)
+
+(defn delete-bit! [fqn]
+  (let [path (bits/fqn->path fqn)
+        file (io/file (str "bits/" path ".cljc"))]
+    (.delete file)
+    (ds/transact! db/*db [[:db.fn/retractEntity [:bit/fqn fqn]]])))
+
+
+(defn add-bit! [bit]
+  (let [path (bits/fqn->path (:bit/fqn bit))
+        file (io/file (str "bits/" path ".cljc"))]
+  (.mkdirs (.getParentFile file))
+  (spit file (:bit/body bit))
+  (db/insert! db/*db bit)))
+
+
+(defn post-save-bit [req]
+  (let [{:bits/keys [user session]} req
+        {:user/keys [namespace]} user
+        old-fqn (:fqn (:route-params req))
+        edit?   (some? old-fqn)
+        {:strs [subns body]} (:form-params req)
+        subns (normalize-namespace subns)]    
+    (cond
+      (nil? namespace)
+      {:status 400 :body "User namespace can’t be empty"}
+
+      (some? (check-namespace namespace subns))
+      ((core/wrap-page #(edit-bit-page true %)) req)
+
+      (some? (check-body old-fqn namespace subns body))
+      ((core/wrap-page #(edit-bit-page true %)) req)
+
+      :else
       (let [{:keys [name docstring]} (bits/parse-defn-form (bits/read-clojure body :clj))
             fqn  (fqn namespace subns name)
-            path (bits/fqn->path fqn)
-            file (io/file (str "bits/" path ".cljc"))]
-        (.mkdirs (.getParentFile file))
-        (spit file body)
-        (db/insert! db/*db { :bit/fqn       fqn
-                             :bit/namespace (bit-ns namespace subns)
-                             :bit/name      name
-                             :bit/docstring docstring
-                             :bit/body      body
-                             :bit/author    (:db/id user) })
-        (response/redirect (str "/bits/" path))))))
+            bit  { :bit/fqn       fqn
+                   :bit/namespace (bit-ns namespace subns)
+                   :bit/name      name
+                   :bit/docstring docstring
+                   :bit/body      body
+                   :bit/author    (:db/id user) }]
+        (add-bit! bit)
+        (when (not= fqn old-fqn)
+          (delete-bit! old-fqn))
+        (response/redirect (str "/bits/" (bits/fqn->path fqn)))))))
+
+
+(defn wrap-author [handler]
+  (fn [req]
+    (let [old-fqn (:fqn (:route-params req))
+          old-bit (ds/entity @db/*db [:bit/fqn old-fqn])
+          user (:bits/user req)]
+      (if (= (:bit/author old-bit) user)
+        (handler req)
+        {:status 403 :body "Can only edit your own bits"}))))
 
 
 (def routes
   {"/add-bit" {:get  (core/wrap-auth #'get-add-bit)
-               :post (core/wrap-auth #'post-add-bit)}})
+               :post (core/wrap-auth #'post-save-bit)}
+   ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/edit"]
+   {:get  (core/wrap-auth (wrap-author #'get-edit-bit))
+    :post (core/wrap-auth (wrap-author #'post-save-bit))}})

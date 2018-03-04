@@ -17,7 +17,7 @@
     [bits.server.core :as core]
     [bits.server.pages.sign-in :as pages.sign-in]
     [bits.server.pages.claim-ns :as pages.claim-ns]
-    [bits.server.pages.add-bit :as pages.add-bit]
+    [bits.server.pages.edit-bit :as pages.edit-bit]
     [bits.server.pages.view-bit :as pages.view-bit]
     ))
 
@@ -60,7 +60,7 @@
         ["" (merge routes
                    pages.sign-in/routes
                    pages.claim-ns/routes
-                   pages.add-bit/routes
+                   pages.edit-bit/routes
                    pages.view-bit/routes)])
       (pages.sign-in/wrap-session)
       (db/wrap-db)
@@ -71,7 +71,7 @@
       (print-errors))
     (->
       (bidi.ring/make-handler
-        ["/bits-edn" (bidi.ring/->Files {:dir "bits"})])
+        ["/raw-bits" (bidi.ring/->Files {:dir "bits"})])
       (with-headers { "Cache-Control" "no-cache"
                       "Expires"       "-1" }))
     (->
