@@ -125,7 +125,7 @@
           "already-sent" [:p "The link we’ve sent to " [:em email] " is still valid"])
         (when (some? sign-in-token)
           [:p
-            [:a.button
+            [:a
               {:href (core/url "/sign-in" {:sign-in-token sign-in-token
                                            :email email})}
               "Psst... Sign in here"]])]]))
@@ -190,7 +190,7 @@
 
 (def routes
   {"/request-sign-in" {:get  (core/wrap-page request-sign-in-page)
-                       :post api-request-sign-in}
+                       :post #'api-request-sign-in}
    "/sign-in-sent"    {:get (core/wrap-page sign-in-sent-page)}
-   "/sign-in"         {:get sign-in}
-   "/sign-out"        {:post sign-out}})
+   "/sign-in"         {:get #'sign-in}
+   "/sign-out"        {:post #'sign-out}})

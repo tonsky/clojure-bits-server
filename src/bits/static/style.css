@@ -36,10 +36,11 @@ button:hover, .button:hover { background: #ffe53b; }
 .signin-email { width: calc(100% - 110px); min-width: 200px; margin: 0 10px 10px 0; }
 .signin-submit { width: 100px; margin: 0 0 10px 0; }
 
-.message { background: #fff; padding: 20px 60px 30px 30px; }
+.message { background: #f5f5f5; padding: 20px 60px 30px 30px; }
 .message > h1 { font-size: 24px; margin-bottom: 0; }
 .message > p > .button { margin: 30px 0 -10px 0; }
 .message > p > em { font-style: italic; }
+.message a { border-bottom: 1px solid #999; }
 
 .input { display: flex; min-width: 200px; cursor: text; }
 .input-prefix { user-select: none; padding: 14px 0 14px 15px; }
@@ -63,7 +64,9 @@ button:hover, .button:hover { background: #ffe53b; }
 .bitform > textarea { grid-column: 2/3; align-self: start; }
 .bitform > textarea { resize: none; height: 121px; }
 .bitform > textarea::placeholder { font-style: normal; }
-.bitform-submit { grid-column: 2/3; margin: 27px 0 27px 0; }
+.bitform-submit { grid-column: 2/3; margin: 27px 0 27px 0; display: flex; justify-content: space-between; }
+.bitform-delete { color: #c33; background: transparent; }
+.bitform-delete:hover { background: #ffdfdf; } 
 .bitform-comment { grid-column: 3; min-width: 240px; max-width: 400px; font-style: italic; font-size: 16px; padding: 0 10px 0 30px; }
 .bitform-comment > p { margin-top: 0; }
 

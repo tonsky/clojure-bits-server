@@ -171,7 +171,9 @@ window.addEventListener('load', function() {
           [:p "Use (defn <name> <docstring> [args] ...) form"]]
 
         [:.bitform-submit
-          [:button.button (if edit? "Update Bit" "Add Bit")]]
+          [:button.button (if edit? "Update Bit" "Add Bit")]
+          (when edit?
+            [:button.bitform-delete {:formaction (str "/bits/" old-fqn "/delete")} "Delete bit"])]
         (when-not edit?
           [:.bitform-comment
             { :style {:margin-top 27}}
@@ -238,6 +240,21 @@ window.addEventListener('load', function() {
         (response/redirect (str "/bits/" (bits/fqn->path fqn)))))))
 
 
+(defn post-delete-bit [req]
+  (let [old-fqn (:fqn (:route-params req))]
+    (delete-bit! old-fqn)
+    (response/redirect (str "/bits/" old-fqn "/deleted"))))
+
+
+(rum/defc get-deleted-page [req]
+  (let [old-fqn (:fqn (:route-params req))]
+    [:.page.page_middle
+      [:.message
+        [:h1 "Deleted"]
+        [:p "Your bit " [:code old-fqn] " was just deleted."]
+        [:p [:a {:href "/"} "Go to index"]]]]))
+
+
 (defn wrap-author [handler]
   (fn [req]
     (let [old-fqn (:fqn (:route-params req))
@@ -251,6 +268,13 @@ window.addEventListener('load', function() {
 (def routes
   {"/add-bit" {:get  (core/wrap-auth #'get-add-bit)
                :post (core/wrap-auth #'post-save-bit)}
+
    ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/edit"]
    {:get  (core/wrap-auth (wrap-author #'get-edit-bit))
-    :post (core/wrap-auth (wrap-author #'post-save-bit))}})
+    :post (core/wrap-auth (wrap-author #'post-save-bit))}
+
+   ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/delete"]
+   {:post (core/wrap-auth (wrap-author #'post-delete-bit))}
+
+   ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/deleted"]
+   {:get (core/wrap-auth (core/wrap-page #'get-deleted-page))}})
