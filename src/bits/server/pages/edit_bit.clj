@@ -193,21 +193,6 @@ window.addEventListener('load', function() {
   ((core/wrap-page #(edit-bit-page false %)) req))
 
 
-(defn delete-bit! [fqn]
-  (let [path (bits/fqn->path fqn)
-        file (io/file (str "bits/" path ".cljc"))]
-    (.delete file)
-    (ds/transact! db/*db [[:db.fn/retractEntity [:bit/fqn fqn]]])))
-
-
-(defn add-bit! [bit]
-  (let [path (bits/fqn->path (:bit/fqn bit))
-        file (io/file (str "bits/" path ".cljc"))]
-  (.mkdirs (.getParentFile file))
-  (spit file (:bit/body bit))
-  (db/insert! db/*db bit)))
-
-
 (defn post-save-bit [req]
   (let [{:bits/keys [user session]} req
         {:user/keys [namespace]} user
@@ -234,16 +219,16 @@ window.addEventListener('load', function() {
                    :bit/docstring docstring
                    :bit/body      body
                    :bit/author    (:db/id user) }]
-        (add-bit! bit)
-        (when (not= fqn old-fqn)
-          (delete-bit! old-fqn))
-        (response/redirect (str "/bits/" (bits/fqn->path fqn)))))))
+        (if edit?
+          (db/update-bit! old-fqn bit)
+          (db/add-bit! bit))
+        (response/redirect-after-post (str "/bits/" (bits/fqn->path fqn)))))))
 
 
 (defn post-delete-bit [req]
   (let [old-fqn (:fqn (:route-params req))]
-    (delete-bit! old-fqn)
-    (response/redirect (str "/bits/" old-fqn "/deleted"))))
+    (db/delete-bit! old-fqn)
+    (response/redirect-after-post (str "/bits/" old-fqn "/deleted"))))
 
 
 (rum/defc get-deleted-page [req]
@@ -265,16 +250,25 @@ window.addEventListener('load', function() {
         {:status 403 :body "Can only edit your own bits"}))))
 
 
+(defn wrap-editable [handler]
+  (fn [req]
+    (let [old-fqn (:fqn (:route-params req))
+          old-bit (ds/entity @db/*db [:bit/fqn old-fqn])]
+      (if (core/editable? old-bit)
+        (handler req)
+        (response/redirect (str "/bits/" old-fqn "?error=locked"))))))
+
+
 (def routes
   {"/add-bit" {:get  (core/wrap-auth #'get-add-bit)
                :post (core/wrap-auth #'post-save-bit)}
 
    ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/edit"]
-   {:get  (core/wrap-auth (wrap-author #'get-edit-bit))
-    :post (core/wrap-auth (wrap-author #'post-save-bit))}
+   {:get  (-> #'get-edit-bit (wrap-author) (wrap-editable) (core/wrap-auth))
+    :post (-> #'post-save-bit (wrap-author) (wrap-editable) (core/wrap-auth))}
 
    ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/delete"]
-   {:post (core/wrap-auth (wrap-author #'post-delete-bit))}
+   {:post (-> #'post-delete-bit (wrap-author) (wrap-editable) (core/wrap-auth))}
 
    ["/bits/" [#"[a-z0-9\-.]+/[^/]+" :fqn] "/deleted"]
-   {:get (core/wrap-auth (core/wrap-page #'get-deleted-page))}})
+   {:get (-> #'get-deleted-page (core/wrap-page) (core/wrap-auth))}})

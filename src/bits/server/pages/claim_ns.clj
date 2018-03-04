@@ -10,7 +10,7 @@
     [bits.server.core :as core]))
 
 
-(def ns-reserved? #{"client" "server" "bits"})
+(def ns-reserved? #{"client" "server" "bits" "core"})
 
 
 (defn ns-normalize [s]
@@ -72,36 +72,36 @@
     (cond
       ;; already claimed something
       (some? (:user/namespace user))
-      (response/redirect "/add-bit")
+      (response/redirect-after-post "/add-bit")
 
       ;; csrf
       (not= csrf-token (:session/csrf-token session))
-      (response/redirect (core/url "/claim-ns" {:error "csrf-token-invalid", :namespace namespace}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "csrf-token-invalid", :namespace namespace}))
 
       ;; taken by someone
       (some? (ds/entity @db/*db [:user/namespace namespace]))
-      (response/redirect (core/url "/claim-ns" {:error "taken", :namespace namespace}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "taken", :namespace namespace}))
 
       ;; reserved
       (ns-reserved? namespace)
-      (response/redirect (core/url "/claim-ns" {:error "reserved", :namespace namespace}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "reserved", :namespace namespace}))
 
       ;; blank
       (str/blank? namespace)
-      (response/redirect (core/url "/claim-ns" {:error "blank", :namespace ""}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "blank", :namespace ""}))
 
       ;; short
       (< (count namespace) 3)
-      (response/redirect (core/url "/claim-ns" {:error "short", :namespace namespace}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "short", :namespace namespace}))
 
       ;; malformed
       (not (re-matches #"[a-z0-9\-]+" namespace))
-      (response/redirect (core/url "/claim-ns" {:error "malformed", :namespace namespace}))
+      (response/redirect-after-post (core/url "/claim-ns" {:error "malformed", :namespace namespace}))
 
       :valid
       (do
         (ds/transact! db/*db [[:db/add (:db/id user) :user/namespace namespace]])
-        (response/redirect "/add-bit")))))
+        (response/redirect-after-post "/add-bit")))))
 
 
 (def routes

@@ -74,15 +74,15 @@
         email         (normalize-email display-email)]
     (cond
       (some? (:bits/user req))
-      (response/redirect "/")
+      (response/redirect-after-post "/")
 
       (not= csrf-token (:session/csrf-token (:bits/session req)))
-      (response/redirect (core/url "/request-sign-in" {:error "csrf-token-invalid"
-                                                       :email display-email}))
+      (response/redirect-after-post (core/url "/request-sign-in" {:error "csrf-token-invalid"
+                                                                  :email display-email}))
 
       (not (re-matches #"\s*[^@\s]+@[^@.\s]+\.[^@\s]+\s*" email))
-      (response/redirect (core/url "/request-sign-in" {:error "malformed-address"
-                                                       :email display-email}))
+      (response/redirect-after-post (core/url "/request-sign-in" {:error "malformed-address"
+                                                                  :email display-email}))
 
       :else
       (let [db   @db/*db
@@ -100,7 +100,7 @@
 
           ;; user, token, not expired yet
           (<= (- (time/now) (:user.sign-in/created user)) sign-in-ttl-ms)
-          (response/redirect 
+          (response/redirect-after-post 
             (core/url "/sign-in-sent"
               {:message       "already-sent"
                :email         display-email
@@ -159,15 +159,15 @@
         session (:bits/session req)]
     (cond
       (not= csrf-token (:session/csrf-token session))
-      (response/redirect "/")
+      (response/redirect-after-post "/")
       
       (nil? (:bits/user req))
-      (response/redirect "/")
+      (response/redirect-after-post "/")
 
       :else
       (do
         (ds/transact! db/*db [[:db.fn/retractEntity (:db/id session)]])
-        (response/redirect "/")))))
+        (response/redirect-after-post "/")))))
 
 
 (defn wrap-session [handler]
@@ -189,8 +189,8 @@
 
 
 (def routes
-  {"/request-sign-in" {:get  (core/wrap-page request-sign-in-page)
+  {"/request-sign-in" {:get  (core/wrap-page #'request-sign-in-page)
                        :post #'api-request-sign-in}
-   "/sign-in-sent"    {:get (core/wrap-page sign-in-sent-page)}
+   "/sign-in-sent"    {:get (core/wrap-page #'sign-in-sent-page)}
    "/sign-in"         {:get #'sign-in}
    "/sign-out"        {:post #'sign-out}})

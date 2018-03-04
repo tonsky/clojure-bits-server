@@ -2,10 +2,16 @@
   (:require
     [clojure.string :as str]
     [rum.core :as rum]
-    [ring.util.response :as response]))
+    [ring.util.response :as response]
+    
+    [bits.core :as bits]))
+
+
+(bits/require [bits.tonsky.time :as time :just [now]])
 
 
 (def ^:dynamic dev? true) ;; FIXME
+(def bit-edit-interval (* 24 60 60 1000)) ;; 24 hours
 
 
 (defn url [path query]
@@ -15,6 +21,10 @@
       (str (name k) "=" (java.net.URLEncoder/encode v "UTF-8")))
     (str/join "&")
     (str path "?")))
+
+
+(defn editable? [bit]
+  (< (- (time/now) (:bit/created bit)) bit-edit-interval))
 
 
 (defn read-cookies [handler]

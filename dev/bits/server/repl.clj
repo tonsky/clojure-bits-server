@@ -47,6 +47,7 @@
                         ["bits.tonsky.coll/index-of" -2]
                         ["bits.tonsky.coll/zip" -2]
                         ["bits.tonsky.hash/md5" -2]
+                        ["bits.tonsky.math/ceil" -2]
                         ["bits.tonsky.time/now" -2]
                         ["bits.tonsky.string/left-pad" -2]
                         ["bits.tonsky.string/not-blank" -2]
@@ -68,7 +69,8 @@
         :bit/name      name
         :bit/docstring (:docstring parsed)
         :bit/body      body
-        :bit/author    author }))))
+        :bit/author    author
+        :bit/created   (.getTime #inst "2018-03-04T16:55:00.000") }))))
 
 
 (defn -main [& args]

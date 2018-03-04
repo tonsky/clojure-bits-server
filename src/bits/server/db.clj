@@ -1,7 +1,14 @@
 (ns bits.server.db
   (:require
     [clojure.string :as str]
-    [datascript.core :as ds]))
+    [clojure.java.io :as io]
+    
+    [datascript.core :as ds]
+
+    [bits.core :as bits]))
+
+
+(bits/require [bits.tonsky.time :as time :just [now]])
 
 
 (defonce *db (ds/create-conn {
@@ -23,6 +30,7 @@
   :bit/docstring      {#_:db.type/string}
   :bit/body           {#_:db.type/string}
   :bit/author         {:db/type :db.type/ref}
+  :bit/created        {#_:db.type/long}
 }))
 
 
@@ -39,3 +47,30 @@
 (defn wrap-db [handler]
   (fn [req]
     (handler (assoc req :bits/db @*db))))
+
+
+(defn delete-bit! [fqn]
+  (let [path (bits/fqn->path fqn)
+        file (io/file (str "bits/" path ".cljc"))]
+    (.delete file)
+    (ds/transact! *db [[:db.fn/retractEntity [:bit/fqn fqn]]])))
+
+
+(defn save-bit! [bit]
+  (let [path (bits/fqn->path (:bit/fqn bit))
+        file (io/file (str "bits/" path ".cljc"))]
+  (.mkdirs (.getParentFile file))
+  (spit file (:bit/body bit))
+  (insert! *db bit)))
+
+
+(defn add-bit! [bit]
+  (save-bit! (assoc bit :bit/created (time/now))))
+
+
+(defn update-bit! [old-fqn bit]
+  (if (not= old-fqn (:bit/fqn bit))
+    (let [old-bit (ds/entity @*db [:bit/fqn old-fqn])]
+      (save-bit! (merge bit (select-keys old-bit [:bit/created])))
+      (delete-bit! old-fqn))
+    (save-bit! bit)))

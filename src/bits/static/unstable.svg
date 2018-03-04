@@ -1,0 +1,25 @@
+<svg width="26" height="36" viewBox="0 0 26 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>unstable</title>
+<desc>Created using Figma</desc>
+<g id="Canvas" transform="translate(-1235 -1342)">
+<clipPath id="clip-0" clip-rule="evenodd">
+<path d="M 1235 1342L 1261 1342L 1261 1378L 1235 1378L 1235 1342Z" fill="#FFFFFF"/>
+</clipPath>
+<g id="unstable" clip-path="url(#clip-0)">
+<g id="Vector (Stroke)">
+<use xlink:href="#path0_fill" transform="translate(1235 1342)" fill="#CC3333"/>
+</g>
+<g id="Vector 2">
+<use xlink:href="#path1_fill" transform="translate(1243 1348)" fill="#CC3333"/>
+</g>
+<g id="Vector 3">
+<use xlink:href="#path2_fill" transform="translate(1243 1367)" fill="#CC3333"/>
+</g>
+</g>
+</g>
+<defs>
+<path id="path0_fill" fill-rule="evenodd" d="M 0 1.5C 0 0.671573 0.671573 0 1.5 0L 24.5 0C 25.3284 0 26 0.671573 26 1.5C 26 2.32843 25.3284 3 24.5 3L 23 3L 23 9.5C 23 9.89782 22.842 10.2794 22.5607 10.5607L 15.1213 18L 22.5607 25.4393C 22.842 25.7206 23 26.1022 23 26.5L 23 33L 23.5 33C 24.3284 33 25 33.6716 25 34.5C 25 35.3284 24.3284 36 23.5 36L 1.5 36C 0.671573 36 0 35.3284 0 34.5C 0 33.6716 0.671573 33 1.5 33L 3 33L 3 26.5C 3 26.1022 3.15804 25.7206 3.43934 25.4393L 10.8787 18L 3.43934 10.5607C 3.15804 10.2794 3 9.89782 3 9.5L 3 3L 1.5 3C 0.671573 3 0 2.32843 0 1.5ZM 6 3L 6 8.87868L 13 15.8787L 20 8.87868L 20 3L 6 3ZM 13 20.1213L 6 27.1213L 6 33L 20 33L 20 27.1213L 13 20.1213Z"/>
+<path id="path1_fill" d="M 5 6L 10 1L 10 0L 0 0L 0 1L 5 6Z"/>
+<path id="path2_fill" d="M 10 6L 0 6L 0 5L 5 0L 10 5L 10 6Z"/>
+</defs>
+</svg>

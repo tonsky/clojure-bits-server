@@ -74,9 +74,13 @@ button:hover, .button:hover { background: #ffe53b; }
 .bitview-name { font-size: 36px; font-weight: bold; line-height: 48px; }
 .bitview-docstring { font-style: normal; margin: 0px 0 24px; white-space: pre-wrap; }
 .bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; margin: 28px 0; }
-.bitview-footer { display: flex; justify-content: space-between; align-items: baseline; }
+.bitview-footer { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px; }
 .bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; clip-path: url(#avatar-mask); }
-.bitview-author { font-size: 16px; }
 .bitview-author > a > .link { border-bottom: 2px solid #ffdf0f; }
 .bitview-author > a:hover > .link { color: #555; }
 .bitview-edit { padding: 10px 20px; margin: -10px 0; }
+.bitview-locked { color: #777;  }
+.bitview-locked_error { color: #c33; background: #ffdfdf; padding: 5px 10px; border-radius: 4px; }
+.bitview-lock { display: inline-block; margin: 0 6px -3px 0; } 
+.bitview-unstable { color: #c33; background: #ffdfdf; padding: 5px 10px; border-radius: 4px; }
+.bitview-unstable-icon { display: inline-block; margin: 0 6px -3px 0; }
