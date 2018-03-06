@@ -31,19 +31,21 @@
 
 (rum/defc request-sign-in-page [req]
   (let [{:strs [error email]} (:query-params req)]
-    [:.page.page_middle
-      [:form.signin { :action "/request-sign-in" :method "POST" }
+    [:.page.page_centered
+      [:.page_500.column
+        [:h2 "Signing In"]
         (case error
           nil                     nil
-          "session-expired"       [:.signin-message "> Sorry, your session has expired. Please sign in again"]
-          "malformed-address"     [:.signin-message "> Malformed email"]
-          "email-failure"         [:.signin-message "> Oops. Can’t sent mail right now. Please try again later"]
-          "csrf-token-invalid"    [:.signin-message "> Oops. Something went wrong. Please try once more"]
-          "sign-in-token-expired" [:.signin-message "> This sign-in link has expired. Please request a new one"]
-          "sign-in-token-invalid" [:.signin-message "> Sorry, this link doesn’t work anymore. Please request a new one"])
-        [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token (:bits/session req))}]
-        [:input.signin-email {:type "text" :autofocus true :name "email" :placeholder "Email" :value (or email "prokopov@gmail.com")}] ;; FIXME
-        [:button.button.signin-submit "Sign In"]]]))
+          "session-expired"       [:.error "> Sorry, your session has expired. Please sign in again"]
+          "malformed-address"     [:.error "> Malformed email"]
+          "email-failure"         [:.error "> Oops. Can’t sent mail right now. Please try again later"]
+          "csrf-token-invalid"    [:.error "> Oops. Something went wrong. Please try once more"]
+          "sign-in-token-expired" [:.error "> This sign-in link has expired. Please request a new one"]
+          "sign-in-token-invalid" [:.error "> Sorry, this link doesn’t work anymore. Please request a new one"])
+        [:form.row { :action "/request-sign-in" :method "POST" }
+          [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token (:bits/session req))}]
+          [:input.row-stretch {:type "text" :autofocus true :name "email" :placeholder "Email" :value (or email "prokopov@gmail.com")}] ;; FIXME
+          [:button.button.signin-submit "Sign In"]]]]))
 
 
 (defn send-sign-in! [user email display-email]
@@ -117,9 +119,9 @@
 
 (rum/defc sign-in-sent-page [req]
   (let [{:strs [message email sign-in-token]} (:query-params req)]
-    [:.page.page_middle
-      [:.message
-        [:h1 "Check your inbox"]
+    [:.page.page_centered
+      [:.message.column
+        [:h2 "Check your inbox"]
         (case message
           "sent"         [:p "Magic sign in link has been sent to " [:em email]]
           "already-sent" [:p "The link we’ve sent to " [:em email] " is still valid"])
@@ -127,7 +129,7 @@
           [:p
             [:a
               {:href (core/url "/sign-in" {:sign-in-token sign-in-token
-                                           :email email})}
+                                          :email email})}
               "Psst... Sign in here"]])]]))
 
 

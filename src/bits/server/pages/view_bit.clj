@@ -45,31 +45,32 @@
         {:bit/keys [namespace name docstring body author]} bit
         user-name (or (:user/display-name author)
                       (:user/namespace author))]
-    [:.page.page_center
-      [:.bitview-name [:.bitview-namespace namespace " / "] name]
-      [:.bitview-docstring (str/replace docstring #"(?m)^\s+" " ")]
-      [:pre.code.bitview-body body]
-      [:.bitview-footer
-        [:.bitview-author
-          "By"
-          [:a
-            {:href (str "/user/" (:user/namespace author))}
-            [:.bitview-avatar { :style {:background-image (str "url('https://secure.gravatar.com/avatar/" (hash/md5 (:user/email author)) "?s=100&d=404'), url('/static/avatar.png')")}}]
-            [:span.link user-name]]]
-        (if (= author user)
-          (if (core/editable? bit)
-            [:a.button.bitview-edit {:href (str "/bits/" ns "/" name "/edit")} "Edit"]
-            [:span.bitview-locked
-              {:class (when (= "locked" (get-in req [:query-params "error"])) "bitview-locked_error")}
-              (lock-icon)
-              "This bit can’t be changed anymore"])
-          (when (core/editable? bit)
-            (let [h (hours bit)]
-              [:span.bitview-unstable
-                { :title (str user-name " still has " h " hour" (when (> h 1) "s") " to edit this bit if needed") }
-                (unstable-icon)
-                (str "Potential changes for next " h " hour" (when (> h 1) "s"))])))]
-      (core/avatar-mask)]))
+    [:.page
+      [:.page_800.column
+        [:.bitview-name [:.bitview-namespace namespace " / "] name]
+        [:div (str/replace docstring #"(?m)^\s+" " ")]
+        [:pre.code.bitview-body body]
+        [:.bitview-footer.spread
+          [:.bitview-author
+            "By"
+            [:a
+              {:href (str "/user/" (:user/namespace author))}
+              [:.bitview-avatar { :style {:background-image (str "url('https://secure.gravatar.com/avatar/" (hash/md5 (:user/email author)) "?s=100&d=404'), url('/static/avatar.png')")}}]
+              [:span.link user-name]]]
+          (if (= author user)
+            (if (core/editable? bit)
+              [:a.button.bitview-edit {:href (str "/bits/" ns "/" name "/edit")} "Edit"]
+              [:span.bitview-locked
+                {:class (when (= "locked" (get-in req [:query-params "error"])) "bitview-locked_error")}
+                (lock-icon)
+                "This bit can’t be changed anymore"])
+            (when (core/editable? bit)
+              (let [h (hours bit)]
+                [:span.bitview-unstable
+                  { :title (str user-name " still has " h " hour" (when (> h 1) "s") " to edit this bit if needed") }
+                  (unstable-icon)
+                  (str "Potential changes for next " h " hour" (when (> h 1) "s"))])))]
+        (core/avatar-mask)]]))
 
 
 (def routes

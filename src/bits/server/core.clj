@@ -49,23 +49,17 @@
 
 (rum/defc header [req]
   (let [{:bits/keys [session user]} req]
-    [:.header
-      [:.header-inner
-        [:.header-left
-          [:a.header-title {:href "/"} "Clojure Bits"]]
-        [:.header-right
-          (if (some? user)
-            (list
-              [:.header-section.header-section_addbit
-                [:a.button_addbit {:href "/add-bit"} "+ Add Function"]]
-              [:.header-section.header-section_user 
-                [:a {:href "#"} (:user/display-email user)]]
-              [:form.header-section.header-section_logout
-                {:action "/sign-out" :method "POST"}
-                [:input {:type "hidden", :name "csrf-token", :value (:session/csrf-token session)}]
-                [:button.button.header-signout "sign out"]])
-            (list
-              [:.header-section.header-section_signin [:a {:href "/request-sign-in"} "sign in"]]))]]]))
+    [:.header.spread
+      [:a.header-title {:href "/"} "Clojure Bits"]
+      [:.header-links
+        (if (some? user)
+          (list
+            [:a.button.header-addbit {:href "/add-bit"} "Add Bit"]
+            [:a.header-link {:href "#"} (or (:user/display-name user) (:user/namespace user) (:user/display-email user))]
+            [:form {:action "/sign-out" :method "POST"}
+              [:input {:type "hidden", :name "csrf-token", :value (:session/csrf-token session)}]
+              [:button.header-signout "sign out"]])
+          [:a.header-link {:href "/request-sign-in"} "sign in"])]]))
 
 
 (rum/defc page-skeleton [req content]

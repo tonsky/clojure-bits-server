@@ -1,86 +1,81 @@
 * { box-sizing: border-box; }
 body { font: 18px/140% sans-serif; margin: 0; }
-a { color: inherit; text-decoration: none; }
-p, h1, pre { margin: 0.5em 0; }
+a { color: inherit; text-decoration: none; border-bottom: 1px solid #999; }
+p, pre { margin: 0 0 1em 0; }
 pre { white-space: pre-wrap; word-break: break-word; }
-h1 { font-size: 24px; }
+h1 { font-size: 36px; line-height: 36px; margin: 0; }
+h2 { font-size: 30px; line-height: 30px; margin: 0; }
+h3 { font-size: 24px; line-height: 24px; margin: 0; }
 
 input, button, .button, textarea { font: inherit; outline: none; }
 input[type=text], textarea, .input { background: #f2f2f2; border: none; border-bottom: 2px solid black; border-radius: 4px 4px 0 0; }
 input[type=text], textarea { padding: 15px 15px 13px; }
 input[type=text]::placeholder, textarea::placeholder { font-style: italic; }
-
-button, .button { display: inline-block; padding: 14px 15px 16px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; }
-button:hover, .button:hover { background: #ffe53b; }
-
-.page, .header-inner { width: 100%; margin: 0 auto; padding: 0 20px; }
-
-.header { background: #f5f5f5; height: 50px; line-height: 50px; }
-.header-inner { display: flex; justify-content: space-between; }
-.header-title { font-size: 22px; font-weight: bold; padding: 7px 20px; margin: 0 0 0 -20px; }
-
-.header-section { display: inline-block; margin-left: 1px; font-size: 16px; }
-.header-section > a { padding: 10px; border-radius: 4px; user-select: none; }
-.header-section > a:hover { text-decoration: underline; }
-.header-section > .button { background: transparent; border: none; border-radius: 4px; cursor: pointer; line-height: 38px; vertical-align: baseline; height: 40px; outline: none; padding: 0 10px; }
-.header-section > .button:hover { text-decoration: underline; }
-
-.header-section > .button_addbit { padding: 10px 20px; background: #ffdf0f; margin-right: 10px; }
-.header-section > .button_addbit:hover { background: #ffe53b; text-decoration: none; }
-
-.page_center { min-width: 480px; max-width: 800px; width: fit-content; margin: 42px auto; }
-.page_middle { display: flex; justify-content: center; align-items: center; height: calc(100vh - 200px); }
-
-.signin { width: 100%; min-width: 240px; max-width: 500px; padding: 20px 20px 10px 20px; }
-.signin-message { color: #c33; margin: 0 0 15px 0; }
-.signin-email { width: calc(100% - 110px); min-width: 200px; margin: 0 10px 10px 0; }
-.signin-submit { width: 100px; margin: 0 0 10px 0; }
-
-.message { background: #f5f5f5; padding: 20px 60px 30px 30px; }
-.message > h1 { font-size: 24px; margin-bottom: 0; }
-.message > p > .button { margin: 30px 0 -10px 0; }
-.message > p > em { font-style: italic; }
-.message a { border-bottom: 1px solid #999; }
+textarea { display: block; width: 100%; }
 
 .input { display: flex; min-width: 200px; cursor: text; }
 .input-prefix { user-select: none; padding: 14px 0 14px 15px; }
 .input > input[type=text] { flex-grow: 1; border: none; background: transparent; padding: 14px 15px 14px 3px; min-width: 0; font-weight: bold; }
 .input > input[type=text]::placeholder { font-weight: normal; }
 
-.claim { width: 100%; min-width: 240px; max-width: 650px; padding: 20px 20px 10px 20px; }
-.claim-intro { max-width: 500px; margin-left: auto; margin-right: auto; }
-.claim-message { color: #c33; margin: 0 0 15px 0; }
-.claim-message > em { font-family: monospace; font-style: normal; }
-.claim-namespace { display: inline-flex; width: calc(100% - 110px); margin: 0 10px 10px 0; }
-.claim-submit { width: 100px; margin: 0 0 10px 0; }
+.button { display: inline-block; padding: 15px 30px; background: #ffdf0f; border: none;  border-radius: 4px; cursor: pointer; user-select: none; white-space: nowrap; }
+.button:hover { background: #ffe53b; }
 
-.code { font-family: 'Fira Code'; font-size: 15px; }
-.bitform { display: grid; grid-template-columns: 1fr minmax(240px,750px) 1fr; }
-.bitform > label { grid-column: 2/3; margin: 27px 0 9px 0; }
-.bitform-message { grid-column: 2/4; color: #c33; }
-.bitform-message > pre { margin: -4px 0 -10px 0; } 
-.bitform-message > p { margin: -4px 0 10px 0; }
-.bitform > .input,
-.bitform > textarea { grid-column: 2/3; align-self: start; }
-.bitform > textarea { resize: none; height: 121px; }
-.bitform > textarea::placeholder { font-style: normal; }
-.bitform-submit { grid-column: 2/3; margin: 27px 0 27px 0; display: flex; justify-content: space-between; }
-.bitform-delete { color: #c33; background: transparent; }
-.bitform-delete:hover { background: #ffdfdf; } 
-.bitform-comment { grid-column: 3; min-width: 240px; max-width: 400px; font-style: italic; font-size: 16px; padding: 0 10px 0 30px; }
-.bitform-comment > p { margin-top: 0; }
+.page, .header { padding: 0 20px; }
+.page { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 200px); }
+.page_500 { min-width: 240px; max-width: 500px; width: 100%; }
+.page_800 { min-width: 240px; max-width: 800px; width: fit-content; }
+.column { display: flex; flex-direction: column; }
+.column > * { margin: 0 0 15px 0; }
+.column > :last-child { margin-bottom: 0; }
+.row { display: flex; flex-wrap: wrap; }
+.row > * { margin: 0 10px 10px 0; }
+.row > :last-child { margin-right: 0 }
+.row-stretch { flex-grow: 1; }
+.spread { display: flex; justify-content: space-between; }
+.spread > :first-child { margin-right: 15px; }
+.message { background: #f5f5f5; padding: 30px; }
+.error { color: #c33; }
+.error > pre { margin: -4px 0 -10px 0; } 
+.comment { font-size: 16px; }
+.code { font-family: 'Fira Code'; font-size: 14px; }
+
+.grid { display: grid; grid-template-columns: 1fr minmax(240px,720px) minmax(200px,1fr); grid-column-gap: 30px; grid-row-gap: 10px; }
+.grid-spacer { grid-column: 1/4; height: 0; }
+.grid-center { grid-column: 2; }
+.grid-right  { grid-column: 3; max-width: 300px; }
+.grid-center-right { grid-column: 2/4; }
+
+.header { background: #f5f5f5; height: 50px; line-height: 50px; margin-bottom: 50px; }
+.header-title { font-size: 24px; font-weight: bold; line-height: 50px; border: none; white-space: nowrap; }
+.header-links { font-size: 16px; white-space: nowrap; }
+.header-links > * { display: inline-block; margin-right: 20px; }
+.header-links > :last-child { margin-right: 0; }
+.header-addbit { line-height: 40px; padding: 0 20px; }
+.header-signout { background: transparent; border: none; cursor: pointer; outline: none; padding: 0; }
+.header-signout:hover { background: transparent; text-decoration: underline; }
+.header-link { border: none; }
+.header-link:hover { text-decoration: underline; } 
+
+.signin-submit { padding: 15px 20px; }
+
+.bitform-body { resize: none; height: 146px; }
+.bitform-body::placeholder { font-style: normal; }
+.bitform-delete { color: #c33; border: none; cursor: pointer; padding: 15px 5px; margin-right: -5px; }
+.bitform-delete:hover { background: none; text-decoration: underline; } 
 
 .bitview-namespace { color: #999; display: inline; font-size: 24px; font-weight: normal; }
-.bitview-name { font-size: 36px; font-weight: bold; line-height: 48px; }
-.bitview-docstring { font-style: normal; margin: 0px 0 24px; white-space: pre-wrap; }
-.bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; margin: 28px 0; }
-.bitview-footer { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px; }
+.bitview-name { font-size: 36px; font-weight: bold; line-height: 36px; }
+.bitview-docstring { white-space: pre-wrap; }
+.bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; }
+.bitview-footer { align-items: baseline; font-size: 16px; }
 .bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; clip-path: url(#avatar-mask); }
+.bitview-author > a { border: none; }
 .bitview-author > a > .link { border-bottom: 2px solid #ffdf0f; }
 .bitview-author > a:hover > .link { color: #555; }
-.bitview-edit { padding: 10px 20px; margin: -10px 0; }
+.bitview-edit { padding: 7px 15px; }
 .bitview-locked { color: #777;  }
 .bitview-locked_error { color: #c33; background: #ffdfdf; padding: 5px 10px; border-radius: 4px; }
 .bitview-lock { display: inline-block; margin: 0 6px -3px 0; } 
-.bitview-unstable { color: #c33; background: #ffdfdf; padding: 5px 10px; border-radius: 4px; }
+.bitview-unstable { color: #c33; background: #ffdfdf; padding: 5px 10px; border-radius: 4px; cursor: help; }
 .bitview-unstable-icon { display: inline-block; margin: 0 6px -3px 0; }

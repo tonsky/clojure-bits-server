@@ -36,11 +36,12 @@
 
 (rum/defc index-page [req]
   (let [db (:bits/db req)]
-    [:.page.page_center
-      (for [d (ds/datoms db :avet :bit/fqn)
-            :let [bit (ds/entity db (:e d))
-                  fqn (:bit/fqn bit)]]
-        [:p [:a {:href (str "/bits/" (bits/fqn->path fqn))} fqn]])]))
+    [:.page
+      [:div
+        (for [d (ds/datoms db :avet :bit/fqn)
+              :let [bit (ds/entity db (:e d))
+                    fqn (:bit/fqn bit)]]
+          [:p [:a {:href (str "/bits/" (bits/fqn->path fqn))} fqn]])]]))
 
 
 (defn with-headers [handler headers]

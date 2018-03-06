@@ -104,7 +104,7 @@ window.addEventListener('load', function() {
 
       (some? (ds/entity @db/*db [:bit/fqn fqn]))
       { :code (bits/underline (str name))
-        :message (str "Function `" fqn "` already exists") }
+        :message (str "Function “" fqn "” already exists") }
 
       (> (count (str name)) 140)
       { :code (bits/underline (str name))
@@ -137,48 +137,65 @@ window.addEventListener('load', function() {
     [:.page
       (script)
 
-      [:form.bitform
-        { :action "" :method "POST" }
+      [:form.grid { :action "" :method "POST" }
         [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
 
-        [:label {:for "subns"} "Sub-namespace (optional)"]
+        [:.grid-center-right
+          [:h2 (if edit? (str "Editing " old-fqn) "Adding bit")]]
+
+        [:.grid-spacer]
+
+        [:.grid-center-right
+          [:label {:for "subns"} "Sub-namespace (optional)"]]
+        
         (when-let [error (and check? (check-namespace namespace subns))]
-          [:.bitform-message [:p "> " error]])
-        [:.input {:on-click "this.querySelector('input').focus()"}
-          [:.input-prefix (str "bits." namespace ".")]
-          [:input
-            {:type "text"
-             :id   "subns"
-             :name "subns"
-             :placeholder "sub-namespace"
-             :max-length (- 140 (count (str "bits." namespace ".")))
-             :value subns}]]
-        [:.bitform-comment
-          [:p "We recommend grouping your fns into semantically named sub-namespaces, e.g. bits.tonsky.coll / .string / .time / .logic etc"]]
+          [:.grid-center-right.error
+            "> " error])
 
-        [:label {:for "body"} "Function body"]
+        [:.grid-center
+          [:.input {:on-click "this.querySelector('input').focus()"}
+            [:.input-prefix (str "bits." namespace ".")]
+            [:input
+              {:type "text"
+              :id   "subns"
+              :name "subns"
+              :placeholder "sub-namespace"
+              :max-length (- 140 (count (str "bits." namespace ".")))
+              :value subns}]]]
+        
+        [:.grid-right
+          [:p.comment "We recommend grouping your fns into semantically named sub-namespaces, e.g. bits.tonsky.coll / .string / .time / .logic etc"]]
+        
+        [:.grid-spacer]
+
+        [:.grid-center-right
+          [:label {:for "body"} "Function body"]]
+
         (when-let [{:keys [code message]} (and check? (check-body old-fqn namespace subns body))]
-          [:.bitform-message
+          [:.grid-center-right.error
             (when (some? code) [:pre.code code])
-            (when (some? message) [:p (when (nil? code) "> ") message])])
-        [:textarea.code
-          { :id "body"
-            :name "body"
-            :max-length 10240
-            :placeholder "(defn <name>\n  \"<docstring>\"\n  [args]\n  ...)" }
-          body]
-        [:.bitform-comment
-          [:p "Use (defn <name> <docstring> [args] ...) form"]]
+            (when (some? message) [:div (when (nil? code) "> ") message])])
 
-        [:.bitform-submit
-          [:button.button (if edit? "Update Bit" "Add Bit")]
-          (when edit?
-            [:button.bitform-delete {:formaction (str "/bits/" old-fqn "/delete")} "Delete bit"])]
-        (when-not edit?
-          [:.bitform-comment
-            { :style {:margin-top 27}}
-            ;; TODO license
-            [:p "You’ll have 24 hours to alter & tune bit body, after that it’ll become immutable"]])
+        [:.grid-center      
+          [:textarea.bitform-body.code
+            { :id "body"
+              :name "body"
+              :max-length 10240
+              :placeholder "(defn <name>\n  \"<docstring>\"\n  [args]\n  ...)" }
+            body]]
+        
+        [:.grid-right
+          [:p.comment "Use (defn <name> <docstring> [args] ...) form"]
+          (when-not edit?
+            [:p.comment "You’ll have 24 hours to alter & tune bit body, after that it’ll become immutable"])]
+
+        [:.grid-spacer]
+        
+        [:.grid-center
+          [:.spread
+            [:button.button (if edit? "Update Bit" "Add Bit")]
+            (when edit?
+              [:button.bitform-delete {:formaction (str "/bits/" old-fqn "/delete")} "Delete bit"])]]
         ]]))
 
 
@@ -233,10 +250,10 @@ window.addEventListener('load', function() {
 
 (rum/defc get-deleted-page [req]
   (let [old-fqn (:fqn (:route-params req))]
-    [:.page.page_middle
-      [:.message
-        [:h1 "Deleted"]
-        [:p "Your bit " [:code old-fqn] " was just deleted."]
+    [:.page.page_centered
+      [:.column.message
+        [:h2 "Deleted"]
+        [:p "Your bit “" old-fqn "” was just deleted."]
         [:p [:a {:href "/"} "Go to index"]]]]))
 
 
