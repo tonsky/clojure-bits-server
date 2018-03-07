@@ -23,7 +23,7 @@
   (println "Inserting fixtures...")
   (ds/transact! db/*db
     [{ :db/id              -1
-       :session/id         "ZFcB6peMogWWQ45hq4w5x9xAl0-a4fXE"
+       :session/id         "tonsky"
        :session/created    (time/now)
        :session/csrf-token (pages.sign-in/new-token)
        :session/user       -2 }

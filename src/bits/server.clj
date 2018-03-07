@@ -16,10 +16,10 @@
     [bits.server.db :as db]
     [bits.server.core :as core]
     [bits.server.pages.sign-in :as pages.sign-in]
+    [bits.server.pages.profile :as pages.profile]
     [bits.server.pages.claim-ns :as pages.claim-ns]
     [bits.server.pages.edit-bit :as pages.edit-bit]
-    [bits.server.pages.view-bit :as pages.view-bit]
-    ))
+    [bits.server.pages.view-bit :as pages.view-bit]))
 
 
 (defn print-errors [handler]
@@ -60,6 +60,7 @@
       (bidi.ring/make-handler
         ["" (merge routes
                    pages.sign-in/routes
+                   pages.profile/routes
                    pages.claim-ns/routes
                    pages.edit-bit/routes
                    pages.view-bit/routes)])

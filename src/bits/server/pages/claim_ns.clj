@@ -51,13 +51,13 @@
           [:input {:type "hidden" :name "csrf-token" :value (:session/csrf-token session)}]
           [:.input.row-stretch
             {:on-click "this.querySelector('input').focus()"}
-            [:.input-prefix.claim-namespace-prefix "bits."]
-            [:input.claim-namespace-input
+            [:.input-prefix "bits."]
+            [:input
               {:type "text"
-              :autofocus true
-              :name "namespace"
-              :placeholder placeholder
-              :value namespace}]]
+               :autofocus true
+               :name "namespace"
+               :placeholder placeholder
+               :value namespace}]]
           [:button.button "Claim"]]]]))
 
 

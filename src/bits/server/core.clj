@@ -23,6 +23,30 @@
     (str path "?")))
 
 
+(defn parse-url [s]
+  (let [[_ location _ query _ fragment] (re-matches #"([^?#]*)(\?([^#]*))?(\#(.*))?" s)
+        [_ scheme domain port path]     (re-matches #"([a-zA-Z]+):///?([^/:]+)(?::(\d+))?(/.*)"  location)]
+    #some {
+      :location location
+      :scheme   scheme
+      :domain   domain
+      :port     port
+      :path     path
+      :query    (when (some? query)
+                  (->> (str/split query #"&")
+                        (map (fn [s] (let [[k v] (str/split s #"=" 2)]
+                                        [(keyword (java.net.URLDecoder/decode k "UTF-8"))
+                                        (when-not (str/blank? v) (java.net.URLDecoder/decode v "UTF-8"))])))
+                        (reduce (fn [m [k v]]
+                                  (if (contains? m k)
+                                    (let [old-v (get m k)]
+                                      (if (vector? old-v)
+                                        (assoc m k (conj old-v v))
+                                        (assoc m k [old-v v])))
+                                    (assoc m k v))) {})))
+      :fragment fragment}))
+
+
 (defn editable? [bit]
   (< (- (time/now) (:bit/created bit)) bit-edit-interval))
 
@@ -55,7 +79,7 @@
         (if (some? user)
           (list
             [:a.button.header-addbit {:href "/add-bit"} "Add Bit"]
-            [:a.header-link {:href "#"} (or (:user/display-name user) (:user/namespace user) (:user/display-email user))]
+            [:a.header-link {:href "/profile"} (or (:user/display-name user) (:user/namespace user) "Profile")]
             [:form {:action "/sign-out" :method "POST"}
               [:input {:type "hidden", :name "csrf-token", :value (:session/csrf-token session)}]
               [:button.header-signout "sign out"]])
