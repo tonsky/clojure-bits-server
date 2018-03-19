@@ -69,7 +69,7 @@ textarea { display: block; width: 100%; }
 .bitview-docstring { white-space: pre-wrap; }
 .bitview-body { background: #f9f9f9; padding: 14px 21px 21px 21px; border-radius: 4px; }
 .bitview-footer { align-items: baseline; font-size: 16px; }
-.bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; clip-path: url(#avatar-mask); }
+.bitview-avatar { width: 50px; height: 50px; background-color: #ffdf0f; background-size: 100%; display: inline-block; vertical-align: middle; margin: -4px 8px 0; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='%23000'%3E %3Cpath d='M 0 25C 0 5.13828 5.13828 0 25 0C 44.8617 0 50 5.13827 50 25C 50 44.8617 44.8617 50 25 50C 5.13827 50 0 44.8617 0 25Z' /%3E%3C/svg%3E") }
 .bitview-author > a { border: none; }
 .bitview-author > a > .link { border-bottom: 2px solid #ffdf0f; }
 .bitview-author > a:hover > .link { color: #555; }

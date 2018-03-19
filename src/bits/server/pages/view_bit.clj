@@ -69,8 +69,7 @@
                 [:span.bitview-unstable
                   { :title (str user-name " still has " h " hour" (when (> h 1) "s") " to edit this bit if needed") }
                   (unstable-icon)
-                  (str "Potential changes for next " h " hour" (when (> h 1) "s"))])))]
-        (core/avatar-mask)]]))
+                  (str "Potential changes for next " h " hour" (when (> h 1) "s"))])))]]]))
 
 
 (def routes
