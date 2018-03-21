@@ -11,12 +11,15 @@
     [bits.server.core :as core]))
 
 
+(bits/require [bits.tonsky.url :as url :just [parse]])
+
+
 (rum/defc get-profile-page [req]
   (let [{:bits/keys [user session]} req
         display-name (or (get-in req [:query-params "display-name"])
                          (:user/display-name user))
         return-to    (or (get-in req [:query-params "return-to"])
-                         (let [referer (core/parse-url (get-in req [:headers "referer"]))]
+                         (let [referer (url/parse (get-in req [:headers "referer"]))]
                            (if (= (:domain referer) (:server-name req))
                              (:path referer)
                              "/")))]
